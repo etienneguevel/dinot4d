@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from cell_similarity.data.datasets import ImageDataset
+from dinov2.data.datasets import ImageDataset
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 

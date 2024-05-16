@@ -52,7 +52,7 @@ class ImageDataset(Dataset):
     
     def __getitem__(self, idx):
         image_path = self.images_list[idx]
-        image = Image.open(image_path)
+        image = Image.open(image_path).convert('RGB')
 
         if self.transform:
             image = self.transform(image)
