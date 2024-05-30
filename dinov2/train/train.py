@@ -23,18 +23,25 @@ from dinov2.utils.utils import CosineScheduler, write_list
 from dinov2.train.ssl_meta_arch import SSLMetaArch
 
 
-torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
+torch.backends.cuda.matmul.allow_tf32 = (
+    True  # PyTorch 1.12 sets this to False by default
+)
 logger = logging.getLogger("dinov2")
+
 
 def get_args_parser(add_help: bool = True):
     parser = argparse.ArgumentParser("DINOv2 training", add_help=add_help)
-    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
+    parser.add_argument(
+        "--config-file", default="", metavar="FILE", help="path to config file"
+    )
     parser.add_argument(
         "--no-resume",
         action="store_true",
         help="Whether to not attempt to resume from the checkpoint directory. ",
     )
-    parser.add_argument("--eval-only", action="store_true", help="perform evaluation only")
+    parser.add_argument(
+        "--eval-only", action="store_true", help="perform evaluation only"
+    )
     parser.add_argument("--eval", type=str, default="", help="Eval type to perform")
     parser.add_argument(
         "opts",
@@ -58,7 +65,9 @@ For python-based LazyConfig, use "path.key=value".
 
 
 def build_optimizer(cfg, params_groups):
-    return torch.optim.AdamW(params_groups, betas=(cfg.optim.adamw_beta1, cfg.optim.adamw_beta2))
+    return torch.optim.AdamW(
+        params_groups, betas=(cfg.optim.adamw_beta1, cfg.optim.adamw_beta2)
+    )
 
 
 def build_schedulers(cfg):
@@ -144,12 +153,19 @@ def do_train(cfg, model, resume=False):
         momentum_schedule,
         teacher_temp_schedule,
         last_layer_lr_schedule,
-    ) = build_schedulers(cfg) # create training parameters that depends on the epochs
+    ) = build_schedulers(cfg)  # create training parameters that depends on the epochs
 
     # checkpointer
-    checkpointer = FSDPCheckpointer(model, cfg.train.output_dir, optimizer=optimizer, save_to_disk=True) # make a checkpointer that saves periodically in fsdp fashion in order to retake training if some workers fail
+    checkpointer = FSDPCheckpointer(
+        model, cfg.train.output_dir, optimizer=optimizer, save_to_disk=True
+    )  # make a checkpointer that saves periodically in fsdp fashion in order to retake training if some workers fail
 
-    start_iter = checkpointer.resume_or_load(cfg.MODEL.WEIGHTS, resume=resume).get("iteration", -1) + 1
+    start_iter = (
+        checkpointer.resume_or_load(cfg.MODEL.WEIGHTS, resume=resume).get(
+            "iteration", -1
+        )
+        + 1
+    )
 
     OFFICIAL_EPOCH_LENGTH = cfg.train.OFFICIAL_EPOCH_LENGTH
     max_iter = cfg.optim.epochs * OFFICIAL_EPOCH_LENGTH
@@ -159,7 +175,7 @@ def do_train(cfg, model, resume=False):
         period=10 * OFFICIAL_EPOCH_LENGTH,
         max_iter=max_iter,
         max_to_keep=2,
-    ) # wrap the checkpointer to tune the frequency to save and the number of versions to keep
+    )  # wrap the checkpointer to tune the frequency to save and the number of versions to keep
 
     # setup data preprocessing
 
@@ -177,7 +193,7 @@ def do_train(cfg, model, resume=False):
         cfg.crops.local_crops_number,
         global_crops_size=cfg.crops.global_crops_size,
         local_crops_size=cfg.crops.local_crops_size,
-    ) # make DINOV2 data transformation (global and local crops)
+    )  # make DINOV2 data transformation (global and local crops)
 
     collate_fn = partial(
         collate_data_and_cast,
@@ -194,16 +210,19 @@ def do_train(cfg, model, resume=False):
         dataset_path=cfg.train.dataset_path,
         transform=data_transform,
         path_preserved=cfg.train.path_preserved,
-        frac=cfg.train.frac
+        frac=cfg.train.frac,
     )
 
     # save the preserved images
 
     if dataset.preserved_images:
-        write_list(os.path.join(cfg.train.output_dir, 'preserved_images.pkl'), dataset.preserved_images)
+        write_list(
+            os.path.join(cfg.train.output_dir, "preserved_images.pkl"),
+            dataset.preserved_images,
+        )
 
     # sampler_type = SamplerType.INFINITE
-    sampler_type = SamplerType.SHARDED_INFINITE # define the sampler to use for fsdp
+    sampler_type = SamplerType.SHARDED_INFINITE  # define the sampler to use for fsdp
     data_loader = make_data_loader(
         dataset=dataset,
         batch_size=cfg.train.batch_size_per_gpu,
@@ -276,8 +295,12 @@ def do_train(cfg, model, resume=False):
 
         if distributed.get_global_size() > 1:
             for v in loss_dict.values():
-                torch.distributed.all_reduce(v) # synchronize the gradients calculated on the different shards and gpus
-        loss_dict_reduced = {k: v.item() / distributed.get_global_size() for k, v in loss_dict.items()}
+                torch.distributed.all_reduce(
+                    v
+                )  # synchronize the gradients calculated on the different shards and gpus
+        loss_dict_reduced = {
+            k: v.item() / distributed.get_global_size() for k, v in loss_dict.items()
+        }
 
         if math.isnan(sum(loss_dict_reduced.values())):
             logger.info("NaN detected")
@@ -293,7 +316,10 @@ def do_train(cfg, model, resume=False):
 
         # checkpointing and testing
 
-        if cfg.evaluation.eval_period_iterations > 0 and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0:
+        if (
+            cfg.evaluation.eval_period_iterations > 0
+            and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0
+        ):
             do_test(cfg, model, f"training_{iteration}")
             torch.cuda.synchronize()
         periodic_checkpointer.step(iteration)
@@ -305,7 +331,6 @@ def do_train(cfg, model, resume=False):
 
 def main(args):
     cfg = setup(args)
-    #torch.cuda.memory._record_memory_history()
 
     model = SSLMetaArch(cfg).to(torch.device("cuda"))
     model.prepare_for_distributed_training()
@@ -321,7 +346,6 @@ def main(args):
         return do_test(cfg, model, f"manual_{iteration}")
 
     do_train(cfg, model, resume=not args.no_resume)
-    #torch.cuda.memory._dump_snapshot(os.path.join(cfg.train.output_dir, "memory_snapshot.pickle"))
 
 
 if __name__ == "__main__":
