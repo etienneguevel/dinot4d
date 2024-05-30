@@ -1,7 +1,7 @@
 # How FSDP is implemented
 
 The different steps that are implemented in order to make FSDP work are listed in this note.  
-**Fully Sharded Distributed Parallelism** is a setup where each process/ worker owns a replica of the model and processes a batch of the data. Afterwards, it uses all reduce algorithm to sum up gradients over different workers.
+**[Fully Sharded Distributed Parallelism](https://pytorch.org/tutorials/intermediate/FSDP_tutorial.html)** is a setup where each process/ worker owns a replica of the model and processes a batch of the data. Afterwards, it uses all reduce algorithm to sum up gradients over different workers.
 
 When training with FSDP, the GPU memory footprint is smaller than when training with DDP across all workers. This makes the training of some very large models feasible by allowing larger models or batch sizes to fit on device. This comes with the cost of increased communication volume. The communication overhead is reduced by internal optimizations like overlapping communication and computation.
 
