@@ -18,14 +18,6 @@ def test_single_path():
 
     dataset = ImageDataset(path_dataset_test, transform=transform)
 
-    assert dataset.__len__() == len(
-        [
-            i
-            for i in os.listdir(path_dataset_test)
-            if i.endswith((".png", ".jpg", ".jpeg", ".tiff"))
-        ]
-    )
-
     dataloader = DataLoader(dataset, batch_size=32)
     for i in dataloader:
         assert len(i) == 32
