@@ -9,7 +9,7 @@ Developping a foundation model for blood white cells is interesting for several 
 
 ## Installing
 
-To install the project and the required packages that are necessary for this project use `conda env install -f conda.yaml`,
+To install the project and the required packages that are necessary for this project use `conda env create -f conda.yaml`,
 then `conda activate cell_sim` and `pip install -e .`.
 
 The dinov2 packages is then available from the conda env cell_sim for execution.
