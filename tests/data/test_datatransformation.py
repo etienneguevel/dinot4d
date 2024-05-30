@@ -13,7 +13,7 @@ def test():
         8,
     )
 
-    path_dataset = os.path.join(os.getcwd(), "dataset_test")
+    path_dataset = os.path.join(os.getcwd(), "dataset1")
     dataset = ImageDataset(root=path_dataset, transform=data_transform)
     dataloader = DataLoader(dataset, batch_size=32)
 

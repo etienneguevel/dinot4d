@@ -28,7 +28,9 @@ def _guess_cluster_type() -> ClusterType:
     return ClusterType.FAIR
 
 
-def get_cluster_type(cluster_type: Optional[ClusterType] = None) -> Optional[ClusterType]:
+def get_cluster_type(
+    cluster_type: Optional[ClusterType] = None,
+) -> Optional[ClusterType]:
     if cluster_type is None:
         return _guess_cluster_type()
 
@@ -48,7 +50,9 @@ def get_checkpoint_path(cluster_type: Optional[ClusterType] = None) -> Optional[
     return Path("/") / CHECKPOINT_DIRNAMES[cluster_type]
 
 
-def get_user_checkpoint_path(cluster_type: Optional[ClusterType] = None) -> Optional[Path]:
+def get_user_checkpoint_path(
+    cluster_type: Optional[ClusterType] = None,
+) -> Optional[Path]:
     checkpoint_path = get_checkpoint_path(cluster_type)
     if checkpoint_path is None:
         return None
@@ -72,11 +76,15 @@ def get_slurm_partition(cluster_type: Optional[ClusterType] = None) -> Optional[
 
 
 def get_slurm_executor_parameters(
-    nodes: int, num_gpus_per_node: int, mem_per_gpu: str, cluster_type: Optional[ClusterType] = None, **kwargs
+    nodes: int,
+    num_gpus_per_node: int,
+    mem_per_gpu: str,
+    cluster_type: Optional[ClusterType] = None,
+    **kwargs,
 ) -> Dict[str, Any]:
     # create default parameters
     params = {
-        #"mem_gb": 0,  # Requests all memory on a node, see https://slurm.schedmd.com/sbatch.html
+        # "mem_gb": 0,  # Requests all memory on a node, see https://slurm.schedmd.com/sbatch.html
         "slurm_mem_per_gpu": mem_per_gpu,
         "gpus_per_node": num_gpus_per_node,
         "tasks_per_node": num_gpus_per_node,  # one task per GPU

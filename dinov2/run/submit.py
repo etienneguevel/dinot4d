@@ -61,9 +61,9 @@ def get_args_parser(
         help="Partition where to submit",
     )
     parser.add_argument(
-        "--use-volta32",
+        "--use-big-gpus",
         action="store_true",
-        help="Request V100-32GB GPUs",
+        help="Request big GPUs",
     )
     parser.add_argument(
         "--comment",
@@ -81,8 +81,9 @@ def get_args_parser(
         "--mem-per-gpu",
         default="30G",
         type=str,
-        help="Minimal memory to request per gpu"
+        help="Minimal memory to request per gpu",
     )
+
     return parser
 
 
@@ -103,8 +104,8 @@ def submit_jobs(task_class, args, name: str):
     executor = submitit.AutoExecutor(folder=args.output_dir, slurm_max_num_timeout=30)
 
     kwargs = {}
-    if args.use_volta32:
-        kwargs["slurm_constraint"] = "volta32gb"
+    if args.use_big_gpus:
+        kwargs["slurm_constraint"] = "GPU2,A6000,GPUM48G"
     if args.comment:
         kwargs["slurm_comment"] = args.comment
     if args.exclude:
