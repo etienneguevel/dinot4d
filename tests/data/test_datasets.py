@@ -7,7 +7,7 @@ from dinov2.data.datasets import ImageDataset
 
 
 def test_single_path():
-    path_dataset_test = Path(__file__).parent / "dataset_test"
+    path_dataset_test = Path(__file__).parent / "dataset1"
     transform = transforms.Compose(
         [
             transforms.Resize((256, 256)),
@@ -33,7 +33,7 @@ def test_single_path():
 
 
 base_path = Path(os.getcwd())
-dirs = ["dataset_test", "dataset_bis"]
+dirs = ["dataset1", "dataset2"]
 
 
 def test_several_paths():

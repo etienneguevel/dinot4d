@@ -41,7 +41,7 @@ def test_single_path():
         dtype=inputs_dtype,
     )
 
-    path_dataset_test = Path(__file__).parent / "dataset_test"
+    path_dataset_test = Path(__file__).parent / "dataset1"
     dataset = ImageDataset(root=path_dataset_test, transform=data_transform)
 
     sampler_type = SamplerType.SHARDED_INFINITE
@@ -92,7 +92,7 @@ def test_several_paths():
         dtype=inputs_dtype,
     )
 
-    dirs = [Path(__file__).parent / i for i in ["dataset_test", "dataset_bis"]]
+    dirs = [Path(__file__).parent / i for i in ["dataset1", "dataset2"]]
     dataset = ImageDataset(root=dirs, transform=data_transform)
     sampler_type = SamplerType.SHARDED_INFINITE
     data_loader = make_data_loader(
