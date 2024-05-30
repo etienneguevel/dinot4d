@@ -14,6 +14,7 @@ from dinov2.data import (
 
 cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
 
+
 def test_single_path():
     img_size = cfg.crops.global_crops_size
     patch_size = cfg.student.patch_size
@@ -58,10 +59,7 @@ def test_single_path():
 
     for i in data_loader:
         assert i["collated_global_crops"].shape[0] == cfg.train.batch_size_per_gpu * 2
-        assert (
-            i["collated_local_crops"].shape[0]
-            == cfg.train.batch_size_per_gpu * cfg.crops.local_crops_number
-        )
+        assert i["collated_local_crops"].shape[0] == cfg.train.batch_size_per_gpu * cfg.crops.local_crops_number
         break
 
 
@@ -108,13 +106,10 @@ def test_several_paths():
 
     for i in data_loader:
         assert i["collated_global_crops"].shape[0] == cfg.train.batch_size_per_gpu * 2
-        assert (
-            i["collated_local_crops"].shape[0]
-            == cfg.train.batch_size_per_gpu * cfg.crops.local_crops_number
-        )
+        assert i["collated_local_crops"].shape[0] == cfg.train.batch_size_per_gpu * cfg.crops.local_crops_number
         break
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     test_single_path()
     test_several_paths()

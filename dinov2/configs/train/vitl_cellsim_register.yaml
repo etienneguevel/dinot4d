@@ -1,5 +1,5 @@
 train:
-  dataset_path: 
+  dataset_path:
     - /home/manon/classification/data/Single_cells/medhi
     - /home/manon/classification/data/Single_cells/vexas_original/Unlabeled
     - /home/manon/classification/data/Single_cells/matek

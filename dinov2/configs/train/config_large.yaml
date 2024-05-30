@@ -6,4 +6,3 @@ train:
 student:
   arch: vit_large
   block_chunks: 4
-
