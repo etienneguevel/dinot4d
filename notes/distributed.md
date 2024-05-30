@@ -7,12 +7,13 @@ When training with FSDP, the GPU memory footprint is smaller than when training 
 
 ## TLDR
 
-The model class has a method to shard the models, that is called at the start of the training script.  
+The model class that is used to define the model is deeply implemented for fsdp, with several methods made for this framework. Especially, it has a method to shard the models, that is called at the start of the training script.  
 The submit script makes a Trainer object that calls the training script. This Trainer is setup and submitted to the slurm env thanks to submitit functions that gather informations about the cluster, and then makes the .sh script that is executed on the slurm env.
 
 ## Setup the model for distributed training (or evaluation)
 
 The model is defined in the `dinov2/train/ssl_meta_arch.py` file and with the class `SSLMetaArch`.  
+There are several methods and attributes in this class that are made for FSDP, and every method is configured to work for this framework.
 This class has a method called `prepare_for_distributed_training()`, that loop over every params of the student / teacher and:
 
 - decide the precision for this param (fp16 or fp32)
