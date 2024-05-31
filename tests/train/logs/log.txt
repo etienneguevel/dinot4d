@@ -2,7 +2,7 @@ I20240506 14:23:38 4187794 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 14:23:38 4187794 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -145,7 +145,7 @@ I20240506 14:24:11 4187794 dinov2 ssl_meta_arch.py:87] OPTIONS -- IBOT masking -
 I20240506 14:24:11 4187794 dinov2 ssl_meta_arch.py:88] OPTIONS -- IBOT masking -- ibot_mask_sample_probability: 0.5
 I20240506 14:24:11 4187794 dinov2 ssl_meta_arch.py:111] OPTIONS -- IBOT -- head shared with DINO
 I20240506 14:24:11 4187794 dinov2 ssl_meta_arch.py:121] Student and Teacher are built: they are both vit_large network.
-I20240506 14:24:11 4187794 dinov2 test_cfg.py:12] Model: 
+I20240506 14:24:11 4187794 dinov2 test_cfg.py:12] Model:
 SSLMetaArch(
   (dino_loss): DINOLoss()
   (koleo_loss): KoLeoLoss(
@@ -383,7 +383,7 @@ I20240506 15:16:57 890 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:16:57 890 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -526,7 +526,7 @@ I20240506 15:17:27 890 dinov2 ssl_meta_arch.py:87] OPTIONS -- IBOT masking -- ib
 I20240506 15:17:27 890 dinov2 ssl_meta_arch.py:88] OPTIONS -- IBOT masking -- ibot_mask_sample_probability: 0.5
 I20240506 15:17:27 890 dinov2 ssl_meta_arch.py:111] OPTIONS -- IBOT -- head shared with DINO
 I20240506 15:17:27 890 dinov2 ssl_meta_arch.py:121] Student and Teacher are built: they are both vit_large network.
-I20240506 15:17:27 890 dinov2 test_cfg.py:12] Model: 
+I20240506 15:17:27 890 dinov2 test_cfg.py:12] Model:
 SSLMetaArch(
   (dino_loss): DINOLoss()
   (koleo_loss): KoLeoLoss(
@@ -764,7 +764,7 @@ I20240506 15:18:57 1262 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:18:57 1262 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -907,7 +907,7 @@ I20240506 15:19:27 1262 dinov2 ssl_meta_arch.py:87] OPTIONS -- IBOT masking -- i
 I20240506 15:19:27 1262 dinov2 ssl_meta_arch.py:88] OPTIONS -- IBOT masking -- ibot_mask_sample_probability: 0.5
 I20240506 15:19:27 1262 dinov2 ssl_meta_arch.py:111] OPTIONS -- IBOT -- head shared with DINO
 I20240506 15:19:27 1262 dinov2 ssl_meta_arch.py:121] Student and Teacher are built: they are both vit_large network.
-I20240506 15:19:27 1262 dinov2 test_cfg.py:12] Model: 
+I20240506 15:19:27 1262 dinov2 test_cfg.py:12] Model:
 SSLMetaArch(
   (dino_loss): DINOLoss()
   (koleo_loss): KoLeoLoss(
@@ -1145,7 +1145,7 @@ I20240506 15:26:01 2271 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:26:01 2271 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -1293,7 +1293,7 @@ I20240506 15:31:02 2940 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:31:02 2940 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -2055,7 +2055,7 @@ I20240506 15:34:15 3378 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:34:15 3378 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -2832,7 +2832,7 @@ I20240506 15:38:21 3927 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:38:21 3927 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -3609,7 +3609,7 @@ I20240506 15:49:19 5425 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 15:49:19 5425 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -4386,7 +4386,7 @@ I20240506 16:02:13 7176 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 16:02:13 7176 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -5148,7 +5148,7 @@ I20240506 16:17:43 9111 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 16:17:43 9111 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -5910,7 +5910,7 @@ I20240506 16:22:09 9779 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 16:22:09 9779 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -6316,7 +6316,7 @@ I20240506 16:23:31 10003 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240506 16:23:31 10003 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -7093,7 +7093,7 @@ I20240507 12:05:41 158928 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 12:05:41 158928 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -7867,7 +7867,7 @@ I20240507 12:22:19 618462 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 12:22:19 618462 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -8641,7 +8641,7 @@ I20240507 13:46:09 619236 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 13:46:09 619236 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -9415,7 +9415,7 @@ I20240507 13:53:15 619449 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 13:53:15 619449 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -10189,7 +10189,7 @@ I20240507 14:23:00 623591 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 14:23:00 623591 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -10966,7 +10966,7 @@ I20240507 15:26:12 633490 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 15:26:12 633490 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -11755,7 +11755,7 @@ I20240507 20:13:38 3072303 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240507 20:13:38 3072303 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -12529,7 +12529,7 @@ I20240509 14:39:20 3805725 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240509 14:39:20 3805725 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -13303,7 +13303,7 @@ I20240509 15:19:18 3383547 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240509 15:19:18 3383547 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -14077,7 +14077,7 @@ I20240509 15:43:52 746011 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240509 15:43:52 746011 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -14866,7 +14866,7 @@ I20240512 15:02:45 3632837 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240512 15:02:45 3632837 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -15472,7 +15472,7 @@ I20240512 15:05:01 3633509 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240512 15:05:01 3633509 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -16250,7 +16250,7 @@ I20240512 15:12:47 3634799 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240512 15:12:47 3634799 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -17037,7 +17037,7 @@ I20240512 17:08:51 1281663 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240512 17:08:51 1281663 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']
@@ -17800,7 +17800,7 @@ I20240512 17:12:49 1282138 dinov2 config.py:59] git:
   sha: e1277af2ba9496fbadf7aec6eba56e8d882d1e35, status: has uncommitted changes, branch: main
 
 I20240512 17:12:49 1282138 dinov2 config.py:60] config_file: config_test.yaml
-eval: 
+eval:
 eval_only: False
 no_resume: False
 opts: ['train.output_dir=/home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train']

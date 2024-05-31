@@ -4,10 +4,10 @@ This notes aims to cover the different issues / technicalities encountered while
 
 ## Dinov2
 
-[Dinov2](https://github.com/facebookresearch/dinov2/tree/main) is a model made for training foundation models to images taking inspiration from llm.  
+[Dinov2](https://github.com/facebookresearch/dinov2/tree/main) is a model made for training foundation models to images taking inspiration from llm.
 It uses a teacher and a student models, AdamW backpropagation and several other techniques to optimize training.
 
-The model used as a backbone is a Vision Transformer.  
+The model used as a backbone is a Vision Transformer.
 There are 4 model architectures :
 
 - ViT small with 21 M parameters
@@ -21,19 +21,19 @@ Knowing that a parameter takes 4 bytes on memory, these models range from 84 MB 
 
 In order to make use of the codes in the repo on a custom dataset, some steps are needed (indeed the code given for pretraining is only for imagenet datasets).
 
-**Datasets**  
+**Datasets**
 Custom datases class needs to be implemented, a simple dataset built on the torch dataset class makes the job
 
-**data collators**  
-The data collate function is made for the Imagenet datasets that have classes, and happens after the cropping step (makes 2 global images and 8 locals).  
+**data collators**
+The data collate function is made for the Imagenet datasets that have classes, and happens after the cropping step (makes 2 global images and 8 locals).
 Simply tweeking a bit the collate function make it work.
 
-**data loaders**  
+**data loaders**
 No modifications on the dataloaders were made
 
 ### Empirical observations
 
-The remarques made here are for models trained with the dinov2 codes given in the github repo.  
+The remarques made here are for models trained with the dinov2 codes given in the github repo.
 
 #### Batch size effect on memory usage
 
@@ -47,7 +47,7 @@ To get to such proportions
 
 #### Training time
 
-With a ViT large, a batch size of 32 and a dataset made of 41K images 200 epochs takes **~5 hours** on an A500.  
+With a ViT large, a batch size of 32 and a dataset made of 41K images 200 epochs takes **~5 hours** on an A500.
 The different datasets that we want to use are:
 
 - medhi dataset : 41k images
@@ -61,12 +61,12 @@ The different datasets that we want to use are:
 
 To boost training (or just to train the giant model) the GPUs on the cluster need to be used collectively (in a distributed fashion).
 
-> TODO : test to train a small ViT on 2 GPUs 
+> TODO : test to train a small ViT on 2 GPUs
 
-To do so the go to way seems to use the dinov2/run/ folder.  
-By default the `output_dir` is `/checkpoint/guevel/experiments`, so it needs to be hand picked to work.  
+To do so the go to way seems to use the dinov2/run/ folder.
+By default the `output_dir` is `/checkpoint/guevel/experiments`, so it needs to be hand picked to work.
 
-The submit folder makes the sbatch command by itself, that is then put in the squeue.  
+The submit folder makes the sbatch command by itself, that is then put in the squeue.
 > needs to modify the command in order to take into account the correct python environment.
 
 One command that seems to be promising is :
@@ -79,4 +79,4 @@ When trying to use the small ViT architecture, the code returned an error messag
 
 ### Saving
 
-When indicating an output_dir inside the config file, the checkpointer doesn't care about it and just saves inside the root folder.  
+When indicating an output_dir inside the config file, the checkpointer doesn't care about it and just saves inside the root folder.
