@@ -96,6 +96,7 @@ def has_batchnorms(model):
             return True
     return False
 
+
 def write_list(file_out, string_list: List[str]):
-    with open(file_out, 'wb') as f:
+    with open(file_out, "wb") as f:
         pickle.dump(string_list, f)

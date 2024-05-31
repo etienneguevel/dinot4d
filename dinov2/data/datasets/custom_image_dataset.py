@@ -19,11 +19,7 @@ class ImageDataset(Dataset):
     ):
         self.root = root
         self.transform = transform
-        self.path_preserved = (
-            path_preserved
-            if isinstance(path_preserved, (list, ListConfig))
-            else [path_preserved]
-        )
+        self.path_preserved = path_preserved if isinstance(path_preserved, (list, ListConfig)) else [path_preserved]
         self.frac = frac
         self.preserved_images = []
         self.is_valid = is_valid
@@ -36,11 +32,7 @@ class ImageDataset(Dataset):
             try:
                 p = self.root
                 preserve = p in self.path_preserved
-                images.extend(
-                    self._retrieve_images(
-                        p, preserve=preserve, frac=self.frac, is_valid=self.is_valid
-                    )
-                )
+                images.extend(self._retrieve_images(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
 
             except OSError:
                 print("The root given is nor a list nor a path")
@@ -49,11 +41,7 @@ class ImageDataset(Dataset):
             for p in self.root:
                 try:
                     preserve = p in self.path_preserved
-                    images.extend(
-                        self._retrieve_images(
-                            p, preserve=preserve, frac=self.frac, is_valid=self.is_valid
-                        )
-                    )
+                    images.extend(self._retrieve_images(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
 
                 except OSError:
                     print(f"the path indicated at {p} cannot be found.")
@@ -92,9 +80,7 @@ class ImageDataset(Dataset):
 
         images_end = len(self.preserved_images)
         if preserve:
-            print(
-                f"{images_end - images_ini} images have been saved for the dataset at path {path}"
-            )
+            print(f"{images_end - images_ini} images have been saved for the dataset at path {path}")
 
         return images
 
@@ -108,7 +94,6 @@ class ImageDataset(Dataset):
     def __len__(self):
         return len(self.images_list)
 
-    
     def __getitem__(self, index: int):
         try:
             image_data = self.get_image_data(index)

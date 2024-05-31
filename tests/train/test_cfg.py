@@ -7,6 +7,7 @@ from dinov2.train.ssl_meta_arch import SSLMetaArch
 logger = logging.getLogger("dinov2")
 cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
 
+
 def test():
 
     model = SSLMetaArch(cfg)
