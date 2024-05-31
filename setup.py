@@ -5,6 +5,7 @@
 
 from pathlib import Path
 import re
+import subprocess
 from typing import List, Tuple
 
 from setuptools import setup, find_packages
@@ -26,7 +27,9 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 
-def get_requirements(path: str = HERE / "requirements.txt") -> Tuple[List[str], List[str]]:
+def get_requirements(
+    path: str = HERE / "requirements.txt",
+) -> Tuple[List[str], List[str]]:
     requirements = []
     extra_indices = []
     with open(path) as f:
@@ -47,7 +50,25 @@ def get_package_version() -> str:
     raise RuntimeError("Can't get package version")
 
 
-requirements, extra_indices = get_requirements()
+def check_nvidia_smi():
+    try:
+        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, check=True)
+        print("nvidia-smi output:\n", result.stdout)
+        return True
+    except subprocess.CalledProcessError as e:
+        print("Error running nvidia-smi:", e)
+        return False
+    except FileNotFoundError:
+        print("nvidia-smi not found. Ensure NVIDIA drivers are installed.")
+        return False
+
+
+if check_nvidia_smi():
+    requirements, extra_indices = get_requirements(path=HERE / "requirements_cuda.txt")
+
+else:
+    requirements, extra_indices = get_requirements()
+
 version = get_package_version()
 dev_requirements, _ = get_requirements(HERE / "requirements-dev.txt")
 extras_requirements, _ = get_requirements(HERE / "requirements-extras.txt")
