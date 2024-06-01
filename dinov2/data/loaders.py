@@ -69,8 +69,11 @@ def make_custom_dataset(
     transform: Optional[Callable] = None,
     path_preserved: List[str] = [],
     frac: float = 0.1,
+    check_images: bool = False,
 ):
-    dataset = ImageDataset(root=dataset_path, transform=transform, path_preserved=path_preserved, frac=frac)
+    dataset = ImageDataset(
+        root=dataset_path, transform=transform, path_preserved=path_preserved, frac=frac, is_valid=check_images
+    )
 
     return dataset
 
