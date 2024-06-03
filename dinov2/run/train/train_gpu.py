@@ -44,6 +44,10 @@ def main():
     train_args_parser = get_train_args_parser(add_help=False)
     args_parser = get_args_parser(description=description, parents=[train_args_parser])
     args = args_parser.parse_args()
+    description = "Local launcher for DINOV2 training"
+    train_args_parser = get_train_args_parser(add_help=False)
+    args_parser = get_args_parser(description=description, parents=[train_args_parser])
+    args = args_parser.parse_args()
     assert os.path.exists(args.config_file), "Configuration file does not exist!"
 
     WORLD_SIZE = torch.cuda.device_count()
