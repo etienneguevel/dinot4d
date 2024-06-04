@@ -6,7 +6,7 @@ train:
   path_preserved:
     - /home/guevel/data/Single_cells/matek
   centering: sinkhorn_knopp
-  batch_size_per_gpu: 64
+  batch_size_per_gpu: 32
   output_dir: /home/guevel/models/vitl_register
   frac: 0.1
 dino:

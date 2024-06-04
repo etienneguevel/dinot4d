@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import warnings
 
 import torch
 import torch.distributed as dist
@@ -13,7 +14,7 @@ from dinov2.distributed import setup_gpu
 
 
 logger = logging.getLogger("dinov2")
-
+warnings.filterwarnings("ignore")
 
 class Trainer:
     def __init__(self, rank, args, world_size):
@@ -23,7 +24,9 @@ class Trainer:
 
     def __call__(self):
         from dinov2.train.train import do_train
-
+        
+        setup_logging(capture_warnings=False)
+        logger.info(f"Args: {self.args}")
         setup_gpu(self.rank, self.world_size)
 
         cfg = get_cfg_from_args(self.args)
@@ -43,7 +46,6 @@ def train(rank, args, world_size):
 
 
 def main():
-    setup_logging(capture_warnings=False)
 
     description = "Local launcher for DINOV2 training"
     train_args_parser = get_train_args_parser(add_help=False)
@@ -51,7 +53,7 @@ def main():
     args = args_parser.parse_args()
     assert os.path.exists(args.config_file), "Configuration file does not exist!"
 
-    WORLD_SIZE = torch.cuda.device_count()
+    WORLD_SIZE = args.ngpus
     mp.spawn(train, args=(args, WORLD_SIZE), nprocs=WORLD_SIZE)
     return 0
 
