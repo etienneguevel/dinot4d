@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import warnings
 
 import torch
 import torch.distributed as dist
@@ -9,17 +10,11 @@ from dinov2.logging import setup_logging
 from dinov2.train import get_args_parser as get_train_args_parser, SSLMetaArch
 from dinov2.run.submit import get_args_parser
 from dinov2.utils.config import get_cfg_from_args
+from dinov2.distributed import _collect_env_vars, _restrict_print_to_main_process, setup_gpu
+
 
 logger = logging.getLogger("dinov2")
-
-
-def setup(rank, world_size):
-    os.environ["MASTER_ADDR"] = "127.0.0.1"
-    os.environ["MASTER_PORT"] = "12355"
-
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
-    dist.barrier()
-
+warnings.filterwarnings("ignore", "xFormers is available")
 
 class Trainer:
     def __init__(self, rank, args, world_size):
@@ -28,14 +23,25 @@ class Trainer:
         self.world_size = world_size
 
     def __call__(self):
+        from dinov2.train.train import do_train
 
-        setup(self.rank, self.world_size)
+        setup_gpu(self.rank, self.world_size)
+        _restrict_print_to_main_process()
+
         cfg = get_cfg_from_args(self.args)
-
+        print(_collect_env_vars())
         model = SSLMetaArch(cfg).to(torch.device(self.rank))
         model.prepare_for_distributed_training()
         logger.info("Model:\n{}".format(model))
+        do_train(cfg, model)
+        self._cleanup()
 
+    def _cleanup():
+        dist.destroy_process_group()
+                
+def train(rank, args, world_size):
+    trainer = Trainer(rank, args, world_size)
+    trainer()
 
 def main():
     setup_logging()
@@ -44,14 +50,10 @@ def main():
     train_args_parser = get_train_args_parser(add_help=False)
     args_parser = get_args_parser(description=description, parents=[train_args_parser])
     args = args_parser.parse_args()
-    description = "Local launcher for DINOV2 training"
-    train_args_parser = get_train_args_parser(add_help=False)
-    args_parser = get_args_parser(description=description, parents=[train_args_parser])
-    args = args_parser.parse_args()
     assert os.path.exists(args.config_file), "Configuration file does not exist!"
 
     WORLD_SIZE = torch.cuda.device_count()
-    mp.spawn(Trainer, args=[args], nprocs=WORLD_SIZE)
+    mp.spawn(train, args=(args, WORLD_SIZE), nprocs=WORLD_SIZE)
     return 0
 
 

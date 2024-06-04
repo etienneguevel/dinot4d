@@ -268,3 +268,21 @@ def enable(*, set_cuda_current_device: bool = True, overwrite: bool = False, all
     _LOCAL_RANK = torch_env.local_rank
     _LOCAL_WORLD_SIZE = torch_env.local_world_size
     _restrict_print_to_main_process()
+
+def setup_gpu(rank, world_size):
+    
+    global _LOCAL_RANK, _LOCAL_WORLD_SIZE
+    os.environ["MASTER_ADDR"] = "127.0.0.1"
+    os.environ["MASTER_PORT"] = "12355"
+    os.environ["RANK"] = str(rank)
+    os.environ["WORLD_SIZE"] = str(world_size)
+    os.environ["LOCAL_RANK"] = str(rank)
+    os.environ["LOCAL_WORLD_SIZE"] = str(world_size)
+    
+    torch.cuda.set_device(rank)
+
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    dist.barrier()
+
+    _LOCAL_RANK = rank
+    _LOCAL_WORLD_SIZE = world_size
