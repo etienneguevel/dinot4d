@@ -36,10 +36,14 @@ In our case the minimal requirements for the train config files should be:
 ### Submit training
 
 The script used to submit the training process is located at `dinov2/run/train/train.py`.
-An example of command would be `python dinov2/run/train/train.py --config-file dinov2/configs/train/vitl_cellsim_register.yaml --output-dir /home/guevel/OT4D/cell_similarity/vitl_register/ --partition hard --ngpus 2`
+An example of command would be `python dinov2/run/train/train.py --config-file dinov2/configs/train/vitl_cellsim_register.yaml --output-dir /your/output/dir --partition hard --ngpus 2`
 
 that would launch the training on 1 node with 2 GPUs on the partition named `hard`.
 > This command makes a sh script with the required slurm constraints that is then executed.
+
+If your setup is a machine with several GPUs available on it, then the best way to launch the training is by using `torchrun` ([here](https://pytorch.org/tutorials/beginner/ddp_series_fault_tolerance.html)), like with this command:
+
+`torchrun --standalone --nproc_per_node=4 dinov2/train/train.py --config-file dinov2/configs/train/vitl_cellsim_register.yaml --output-dir /your/output/dir`
 
 **The conda env previously created should be activated before launching this command.**
 
