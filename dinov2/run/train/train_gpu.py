@@ -10,11 +10,12 @@ from dinov2.logging import setup_logging
 from dinov2.train import get_args_parser as get_train_args_parser, SSLMetaArch
 from dinov2.run.submit import get_args_parser
 from dinov2.utils.config import get_cfg_from_args
-from dinov2.distributed import _collect_env_vars, _restrict_print_to_main_process, setup_gpu
+from dinov2.distributed import setup_gpu
 
 
 logger = logging.getLogger("dinov2")
 warnings.filterwarnings("ignore", "xFormers is available")
+
 
 class Trainer:
     def __init__(self, rank, args, world_size):
@@ -26,10 +27,8 @@ class Trainer:
         from dinov2.train.train import do_train
 
         setup_gpu(self.rank, self.world_size)
-        _restrict_print_to_main_process()
 
         cfg = get_cfg_from_args(self.args)
-        print(_collect_env_vars())
         model = SSLMetaArch(cfg).to(torch.device(self.rank))
         model.prepare_for_distributed_training()
         logger.info("Model:\n{}".format(model))
@@ -38,10 +37,12 @@ class Trainer:
 
     def _cleanup():
         dist.destroy_process_group()
-                
+
+
 def train(rank, args, world_size):
     trainer = Trainer(rank, args, world_size)
     trainer()
+
 
 def main():
     setup_logging()
