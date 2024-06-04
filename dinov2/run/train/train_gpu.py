@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-import warnings
 
 import torch
 import torch.distributed as dist
@@ -14,7 +13,6 @@ from dinov2.distributed import setup_gpu
 
 
 logger = logging.getLogger("dinov2")
-warnings.filterwarnings("ignore", "xFormers is available")
 
 
 class Trainer:
@@ -35,7 +33,7 @@ class Trainer:
         do_train(cfg, model)
         self._cleanup()
 
-    def _cleanup():
+    def _cleanup(self):
         dist.destroy_process_group()
 
 
@@ -45,7 +43,7 @@ def train(rank, args, world_size):
 
 
 def main():
-    setup_logging()
+    setup_logging(capture_warnings=False)
 
     description = "Local launcher for DINOV2 training"
     train_args_parser = get_train_args_parser(add_help=False)
