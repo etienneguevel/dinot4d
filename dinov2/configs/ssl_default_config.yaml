@@ -61,6 +61,8 @@ ibot:
 train:
   batch_size_per_gpu: 64
   dataset_path: ImageNet:split=TRAIN
+  path_preserved:
+  frac: 1
   output_dir: .
   saveckp_freq: 20
   seed: 0
