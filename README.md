@@ -48,3 +48,28 @@ If your setup is a machine with several GPUs available on it, then the best way 
 **The conda env previously created should be activated before launching this command.**
 
 ## Results
+
+The [Barcelona dataset](https://www.sciencedirect.com/science/article/pii/S2352340920303681) was used to see the quality of the embeddings obtained after training.
+
+The model used was trained following the procedure given by the autors of the dinov2 article, using 4 register tokens and a vitl architecture.
+
+### Barcelona dataset
+
+![umap](/umap_barcelona.png)
+
+*UMAP in 2 dimensions plot of the images contained in the Barcelona dataset*
+
+### Classifiers results
+
+Nearest Neighbors and Linear Probing were applied on the embeddings created by the model, the models were performed with a 5-fold cross validation.
+Results are shown in the format *mean (+/- std)*
+
+|                | f1_score       | recall         | precision      | balanced_accuracy   |
+|:---------------|:---------------|:---------------|:---------------|:--------------------|
+| 1-NN           | 86.6 (+/- 0.7) | 86.7 (+/- 0.7) | 86.6 (+/- 0.7) | 85.2 (+/- 0.5)      |
+| 20-NN          | 89.1 (+/- 0.7) | 89.2 (+/- 0.7) | 89.2 (+/- 0.6) | 88.1 (+/- 0.8)      |
+| Linear Probing | 91.6 (+/- 0.2) | 91.6 (+/- 0.2) | 91.6 (+/- 0.2) | 90.4 (+/- 0.3)      |
+
+### RGB images of cells
+
+![RGB](/cells_rgb.png)
