@@ -310,6 +310,7 @@ class DinoVisionTransformer(nn.Module):
         if norm:
             outputs = [self.norm(out) for out in outputs]
         class_tokens = [out[:, 0] for out in outputs]
+        registry_tokens = [out[:, 1 + self.num_register_tokens] for out in outputs]
         outputs = [out[:, 1 + self.num_register_tokens :] for out in outputs]
         if reshape:
             B, _, w, h = x.shape
@@ -318,7 +319,7 @@ class DinoVisionTransformer(nn.Module):
                 for out in outputs
             ]
         if return_class_token:
-            return tuple(zip(outputs, class_tokens))
+            return tuple(zip(outputs, class_tokens, registry_tokens))
         return tuple(outputs)
 
     def forward(self, *args, is_training=False, **kwargs):
