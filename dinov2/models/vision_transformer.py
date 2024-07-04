@@ -332,7 +332,7 @@ class DinoVisionTransformer(nn.Module):
             if i < len(self.blocks) - 1:
                 x = blk(x)
             else:
-                return blk(x, return_attention=False)
+                return blk(x, return_attention=True)
 
     def forward(self, *args, is_training=False, **kwargs):
         ret = self.forward_features(*args, **kwargs)

@@ -90,11 +90,10 @@ class Block(nn.Module):
             return self.ls1(self.attn(self.norm1(x)))
 
         def ffn_residual_func(x: Tensor) -> Tensor:
-
-            if return_attention:
-                return self.attn(self.norm1(x), return_attn=True)
-
             return self.ls2(self.mlp(self.norm2(x)))
+        
+        if return_attention:
+            return self.attn(self.norm1(x), return_attn=True)
 
         if self.training and self.sample_drop_ratio > 0.1:
             # the overhead is compensated only for a drop path rate larger than 0.1

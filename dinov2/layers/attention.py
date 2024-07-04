@@ -77,6 +77,8 @@ class MemEffAttention(Attention):
         if not XFORMERS_AVAILABLE:
             if attn_bias is not None:
                 raise AssertionError("xFormers is required for using nested tensors")
+
+        if return_attn:
             return super().forward(x, return_attn)
 
         B, N, C = x.shape
