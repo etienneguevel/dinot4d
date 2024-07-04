@@ -59,6 +59,8 @@ The model used was trained following the procedure given by the autors of the di
 
 *UMAP in 2 dimensions plot of the images contained in the Barcelona dataset*
 
+> The code used for these results is in `notebooks/dinov2_embedding_visualisation.ipynb`
+
 ### Classifiers results
 
 Nearest Neighbors and Linear Probing were applied on the embeddings created by the model, the models were performed with a 5-fold cross validation.
@@ -70,6 +72,20 @@ Results are shown in the format *mean (+/- std)*
 | 20-NN          | 89.1 (+/- 0.7) | 89.2 (+/- 0.7) | 89.2 (+/- 0.6) | 88.1 (+/- 0.8)      |
 | Linear Probing | 91.6 (+/- 0.2) | 91.6 (+/- 0.2) | 91.6 (+/- 0.2) | 90.4 (+/- 0.3)      |
 
+> The code used for these metrics is in `notebookd/embedding_testing.ipynb`
+
 ### RGB images of cells
 
 ![RGB](/cells_rgb.png)
+
+> The code used for these results is in `notebooks/dinov2_embedding_visualisation.ipynb`
+
+### Attention maps
+
+Below are displayed the attention map between the cls or register tokens and the different patches of images :
+
+![cls_attention_map](/notebooks/attention_map_cls.png)
+
+![register_attention_map](/notebooks/attention_map_registers.png)
+
+> The code used for those figures is in `notebooks/attention_maps.ipynb`
