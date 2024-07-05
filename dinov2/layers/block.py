@@ -91,7 +91,7 @@ class Block(nn.Module):
 
         def ffn_residual_func(x: Tensor) -> Tensor:
             return self.ls2(self.mlp(self.norm2(x)))
-        
+
         if return_attention:
             return self.attn(self.norm1(x), return_attn=True)
 
