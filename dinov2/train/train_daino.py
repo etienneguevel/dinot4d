@@ -7,19 +7,18 @@ import argparse
 import logging
 import math
 import os
-from functools import partial
-
-from fvcore.common.checkpoint import PeriodicCheckpointer
 import torch
 
-from dinov2.data import SamplerType, make_data_loader, make_custom_dataset
-from dinov2.data import collate_data_and_cast, DataAugmentationDINO, MaskingGenerator
+from functools import partial
+from fvcore.common.checkpoint import PeriodicCheckpointer
+
 import dinov2.distributed as distributed
+from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset
+from dinov2.data import collate_data_and_cast, DataAugmentationDINO, MaskingGenerator
 from dinov2.fsdp import FSDPCheckpointer
 from dinov2.logging import MetricLogger
 from dinov2.utils.config import setup
-from dinov2.utils.utils import CosineScheduler, write_list
-
+from dinov2.utils.utils import CosineScheduler, write_list, cycle
 from dinov2.train.ssl_meta_arch import SSLMetaArch
 
 
@@ -144,6 +143,7 @@ def do_train(cfg, model, resume=False):
     )  # create training parameters that depends on the epochs
 
     # checkpointer
+
     checkpointer = FSDPCheckpointer(
         model, cfg.train.output_dir, optimizer=optimizer, save_to_disk=True
     )  # make a checkpointer that saves periodically in fsdp fashion in order to retake training if some workers fail
@@ -187,7 +187,7 @@ def do_train(cfg, model, resume=False):
         dtype=inputs_dtype,
     )
 
-    # setup data loader
+    # make datasets
 
     dataset = make_custom_dataset(
         root_path=cfg.train.dataset_path,
@@ -195,8 +195,12 @@ def do_train(cfg, model, resume=False):
         path_preserved=cfg.train.path_preserved,
         frac=cfg.train.frac,
     )
+    labelled_dataset = make_labelled_dataset(
+        root_path=cfg.train.dataset_path,
+        dataset_path=cfg.train.labelled_dataset_path,
+    )
 
-    # save the preserved images
+    # save the preserved images, if necessary
 
     if dataset.preserved_images:
         write_list(
@@ -204,7 +208,8 @@ def do_train(cfg, model, resume=False):
             dataset.preserved_images,
         )
 
-    # sampler_type = SamplerType.INFINITE
+    # setup the unlabelled data loader
+    
     sampler_type = SamplerType.SHARDED_INFINITE  # define the sampler to use for fsdp
     data_loader = make_data_loader(
         dataset=dataset,
@@ -218,9 +223,23 @@ def do_train(cfg, model, resume=False):
         collate_fn=collate_fn,
     )
 
-    # A bit of verbose for information sake
-    print("There are {} images in the dataset used".format(dataset.__len__()))
+    # setup the labelled data generator
 
+    labelled_dataloader = make_data_loader(
+        dataset=labelled_dataset,
+        batch_size=cfg.train.labelled_batch_size_per_gpu,
+        num_workers=cfg.train.num_workers,
+        shuffle=True,
+        sampler_type=sampler_type,
+        drop_last=True,
+    )
+    labelled_iterable = cycle(labelled_dataloader)
+
+    # A bit of verbose for information sake
+
+    print("There are {} images in the unlabelled dataset used".format(dataset.__len__()))
+    print("There are {} images in the labelled dataset used".format(labelled_dataset.__len__()))
+    
     # training loop
 
     iteration = start_iter
@@ -236,7 +255,8 @@ def do_train(cfg, model, resume=False):
         header,
         max_iter,
         start_iter,
-    ):
+    ):  
+        labelled_images, labels = next(labelled_iterable)
         current_batch_size = data["collated_global_crops"].shape[0] / 2
         if iteration > max_iter:
             return

@@ -12,7 +12,7 @@ from torch import nn
 from dinov2.loss import DINOLoss, iBOTPatchLoss, KoLeoLoss
 from dinov2.models import build_model_from_cfg
 from dinov2.layers import DINOHead
-from dinov2.utils.utils import has_batchnorms
+from dinov2.utils.utils import has_batchnorms, load_pretrained_weights
 from dinov2.utils.param_groups import get_params_groups_with_decay, fuse_params_groups
 from dinov2.fsdp import (
     get_fsdp_wrapper,
@@ -43,6 +43,14 @@ class SSLMetaArch(nn.Module):
         teacher_model_dict = dict()
 
         student_backbone, teacher_backbone, embed_dim = build_model_from_cfg(cfg)
+        if cfg.student.pretrained_path:
+            try:
+                load_pretrained_weights(student_backbone, cfg.student.pretrained_path)
+                load_pretrained_weights(teacher_backbone, cfg.student.pretrained_path)
+
+            except ValueError as e:
+                print(e)
+
         student_model_dict["backbone"] = student_backbone
         teacher_model_dict["backbone"] = teacher_backbone
         logger.info(f"OPTIONS -- architecture : embed_dim: {embed_dim}")
@@ -134,7 +142,7 @@ class SSLMetaArch(nn.Module):
         else:
             loss.backward()
 
-    def forward_backward(self, images, teacher_temp):
+    def forward_backward(self, images, teacher_temp, labelled_data=None):
         n_global_crops = 2
         assert n_global_crops == 2
         n_local_crops = self.cfg.crops.local_crops_number
@@ -359,6 +367,26 @@ class SSLMetaArch(nn.Module):
 
             # accumulate loss
             loss_accumulator += self.ibot_loss_weight * ibot_patch_loss
+
+        if labelled_data:
+            labelled_imgs, labels = labelled_data
+
+            # compute labelled loss
+            labelled_student_cls_token = self.student.backbone(labelled_imgs)["x_norm_clstoken"]
+            labelled_loss = nn.functional.cross_entropy(labelled_student_cls_token, labels)
+
+            # store for display
+            loss_dict["labelled_loss"] = labelled_loss
+
+            # scale the loss in function of unlab_samples / lab_samples
+            n_unlab = (n_local_crops + n_global_crops) * len(images)
+            n_lab = len(labelled_imgs)
+
+            # accumulate loss
+            loss_accumulator = (
+                (loss_accumulator * n_unlab) / (n_unlab + n_lab) +
+                (labelled_loss * n_lab) / (n_unlab + n_lab)
+            )
 
         self.backprop_loss(loss_accumulator)
 
