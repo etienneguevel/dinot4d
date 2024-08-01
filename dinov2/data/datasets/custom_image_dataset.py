@@ -118,10 +118,10 @@ class LabelledDataset(Dataset):
         self.root = root
         self.images_list, self.labels = self._get_images_and_labels(data_path)
         self.transform = transform
-    
+
     def __len__(self)-> int:
         return len(self.images_list)
-    
+
     def _get_images_and_labels(self, data_path: str)->Tuple[List]:
         df = pd.read_csv(data_path)
 
@@ -134,7 +134,7 @@ class LabelledDataset(Dataset):
             image_data = f.read()
 
         return image_data
-    
+
     def __getitem__(self, index: int):
         try:
             image_data = self._get_image_data(index)
@@ -144,5 +144,5 @@ class LabelledDataset(Dataset):
 
         if self.transform is not None:
             image = self.transform(image)
-        
+
         return image, self.labels[index]

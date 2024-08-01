@@ -1,23 +1,29 @@
+train:
+  dataset_path: /data/manon/Single_cells/medhi
+  labelled_dataset_path: 
+  path_preserved:
+  centering: sinkhorn_knopp
+  batch_size_per_gpu: 32
+  labelled_batch_size_per_gpu: 8
+  output_dir: /home/guevel/models/vitl_dainobloom
 dino:
   head_n_prototypes: 131072
   head_bottleneck_dim: 384
 ibot:
   separate_head: true
   head_n_prototypes: 131072
-train:
-  batch_size_per_gpu: 12
-  dataset_path: ImageNet22k
-  centering: sinkhorn_knopp
 student:
-  arch: vit_giant2
+  arch: vit_large
   patch_size: 14
   drop_path_rate: 0.4
   ffn_layer: swiglufused
   block_chunks: 4
+  num_register_tokens: 0
+  pretrained_path: /home/guevel/OT4D/models/dinobloom/DinoBloom-L.pth
 teacher:
   momentum_teacher: 0.994
 optim:
-  epochs: 500
+  epochs: 100
   weight_decay_end: 0.2
   base_lr: 2.0e-04  # learning rate for a batch size of 1024
   warmup_epochs: 80
