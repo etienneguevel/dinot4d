@@ -65,6 +65,8 @@ def make_classification_train_transform(
         transforms_list.append(transforms.RandomHorizontalFlip(hflip_prob))
     transforms_list.extend(
         [
+            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
             MaybeToTensor(),
             make_normalize_transform(mean=mean, std=std),
         ]

@@ -1,9 +1,11 @@
 import os
 import pathlib
 import random
-from typing import List
-from omegaconf.listconfig import ListConfig
+import pandas as pd
 
+from typing import List, Tuple
+from PIL import Image
+from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
 from .decoders import ImageDataDecoder
 
@@ -84,7 +86,7 @@ class ImageDataset(Dataset):
 
         return images
 
-    def get_image_data(self, index: int):
+    def _get_image_data(self, index: int):
         path = self.images_list[index]
         with open(path, "rb") as f:
             image_data = f.read()
@@ -96,7 +98,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, index: int):
         try:
-            image_data = self.get_image_data(index)
+            image_data = self._get_image_data(index)
             image = ImageDataDecoder(image_data).decode()
         except Exception as e:
             raise RuntimeError(f"can nor read image for sample {index}") from e
@@ -105,3 +107,42 @@ class ImageDataset(Dataset):
             image = self.transform(image)
 
         return image
+
+class LabelledDataset(Dataset):
+    def __init__(
+            self,
+            root: str,
+            data_path: str,
+            transform=None,
+    ):
+        self.root = root
+        self.images_list, self.labels = self._get_images_and_labels(data_path)
+        self.transform = transform
+    
+    def __len__(self)-> int:
+        return len(self.images_list)
+    
+    def _get_images_and_labels(self, data_path: str)->Tuple[List]:
+        df = pd.read_csv(data_path)
+
+        return df["names"].tolist(), df["pseudo_labels"].tolist()
+
+    def _get_image_data(self, index: int):
+        img_name = self.images_list[index].split("/")[-1]
+        path = os.join(self.root, img_name)
+        with open(path, "rb") as f:
+            image_data = f.read()
+
+        return image_data
+    
+    def __getitem__(self, index: int):
+        try:
+            image_data = self._get_image_data(index)
+            image = ImageDataDecoder(image_data).decode()
+        except Exception as e:
+            raise RuntimeError(f"can nor read image for sample {index}") from e
+
+        if self.transform is not None:
+            image = self.transform(image)
+        
+        return image, self.labels[index]

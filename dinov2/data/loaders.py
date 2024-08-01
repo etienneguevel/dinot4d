@@ -10,8 +10,9 @@ from typing import Any, Callable, List, Optional, TypeVar, Union
 import torch
 from torch.utils.data import Sampler
 
-from .datasets import ImageNet, ImageNet22k, ImageDataset
+from .datasets import ImageNet, ImageNet22k, ImageDataset, LabelledDataset
 from .samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
+from .transforms import make_classification_train_transform
 
 
 logger = logging.getLogger("dinov2")
@@ -65,18 +66,28 @@ def _parse_dataset_str(dataset_str: str):
 
 
 def make_custom_dataset(
-    dataset_path: Union[str, list],
+    root_path: Union[str, list],
     transform: Optional[Callable] = None,
     path_preserved: List[str] = [],
     frac: float = 0.1,
     check_images: bool = False,
 ):
     dataset = ImageDataset(
-        root=dataset_path, transform=transform, path_preserved=path_preserved, frac=frac, is_valid=check_images
+        root=root_path, transform=transform, path_preserved=path_preserved, frac=frac, is_valid=check_images
     )
 
     return dataset
 
+def make_labelled_dataset(
+    root_path: str,
+    dataset_path: str,
+):
+    transform = make_classification_train_transform()
+    dataset = LabelledDataset(
+        root=root_path, data_path=dataset_path, transform=transform
+    )
+
+    return dataset
 
 def make_dataset(
     *,
