@@ -43,22 +43,21 @@ class SSLMetaArch(nn.Module):
         teacher_model_dict = dict()
 
         student_backbone, teacher_backbone, embed_dim = build_model_from_cfg(cfg)
-        if cfg.student.pretrained_path:
-            try:
-                load_pretrained_weights(student_backbone, cfg.student.pretrained_path)
-                load_pretrained_weights(teacher_backbone, cfg.student.pretrained_path)
-
-            except ValueError as e:
-                print(e)
-
         student_model_dict["backbone"] = student_backbone
         teacher_model_dict["backbone"] = teacher_backbone
         logger.info(f"OPTIONS -- architecture : embed_dim: {embed_dim}")
 
         if cfg.student.pretrained_weights:
-            chkpt = torch.load(cfg.student.pretrained_weights)
-            logger.info(f"OPTIONS -- pretrained weights: loading from {cfg.student.pretrained_weights}")
-            student_backbone.load_state_dict(chkpt["model"], strict=False)
+            ckpt_path = cfg.student.pretrained_weights
+            ckpt = torch.load(ckpt_path, map_location="cpu")
+            logger.info(f"OPTIONS -- pretrained weights: loading from {ckpt_path}")
+            keys = [i for i in ckpt if i in ["model", "teacher", "student"]]
+            if len(keys) > 0:
+                key = sorted(keys)[0]
+                load_pretrained_weights(student_backbone, ckpt_path, key)
+            
+            else:
+                raise ValueError("there are no keys recognized in the model dict")
 
         self.embed_dim = embed_dim
         self.dino_out_dim = cfg.dino.head_n_prototypes
@@ -66,6 +65,7 @@ class SSLMetaArch(nn.Module):
         self.do_dino = cfg.dino.loss_weight > 0
         self.do_koleo = cfg.dino.koleo_loss_weight > 0
         self.do_ibot = cfg.ibot.loss_weight > 0
+        self.do_daino = cfg.daino.loss_weight > 0
         self.ibot_separate_head = cfg.ibot.separate_head
 
         logger.info("OPTIONS -- DINO")
@@ -162,6 +162,7 @@ class SSLMetaArch(nn.Module):
 
         do_dino = self.do_dino
         do_ibot = self.do_ibot
+        do_daino = self.do_daino
 
         # loss scales
         ibot_loss_scale = 1.0 / n_global_crops
@@ -368,7 +369,8 @@ class SSLMetaArch(nn.Module):
             # accumulate loss
             loss_accumulator += self.ibot_loss_weight * ibot_patch_loss
 
-        if labelled_data:
+        if do_daino:
+            assert labelled_data is not None, "daino is activated but no labelled data is given"
             labelled_imgs, labels = labelled_data
 
             # compute labelled loss

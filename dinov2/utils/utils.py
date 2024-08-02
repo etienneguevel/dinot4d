@@ -18,7 +18,6 @@ from torch import nn
 
 logger = logging.getLogger("dinov2")
 
-
 def load_pretrained_weights(model, pretrained_weights, checkpoint_key):
     if urlparse(pretrained_weights).scheme:  # If it looks like an URL
         state_dict = torch.hub.load_state_dict_from_url(pretrained_weights, map_location="cpu")
@@ -100,11 +99,3 @@ def has_batchnorms(model):
 def write_list(file_out, string_list: List[str]):
     with open(file_out, "wb") as f:
         pickle.dump(string_list, f)
-
-def cycle(loader: torch.utils.data.DataLoader):
-    epoch = 0
-    while True:
-        loader.sampler.set_epoch(epoch)
-        for x in loader:
-            yield x
-        epoch += 1
