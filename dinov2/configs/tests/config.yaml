@@ -58,22 +58,16 @@ ibot:
   head_bottleneck_dim: 256
   head_nlayers: 3
   head_hidden_dim: 2048
-daino:
-  loss_weight: 0.0  # if > 0 daino will be used, a labelled_dataset_path will be expected
-  labelled_batch_size_per_gpu: 8
-  labelled_dataset_path:
 train:
-  batch_size_per_gpu: 64
-  dataset_path: ImageNet:split=TRAIN
-  path_preserved:
-  frac: 1
-  output_dir: .
+  batch_size_per_gpu: 32
+  dataset_path: /home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/data/dataset_test
+  output_dir: /home/guevel/OT4D/cell_similarity/src/cell_similarity/tests/train
   saveckp_freq: 20
   seed: 0
-  num_workers: 10
-  OFFICIAL_EPOCH_LENGTH: 1250
+  num_workers: 4
+  OFFICIAL_EPOCH_LENGTH: 1
   cache_dataset: true
-  centering: "centering" # or "sinkhorn_knopp"
+  centering: centering
 student:
   arch: vit_large
   patch_size: 16
@@ -81,8 +75,8 @@ student:
   layerscale: 1.0e-05
   drop_path_uniform: true
   pretrained_weights: ''
-  ffn_layer: "mlp"
-  block_chunks: 0
+  ffn_layer: mlp
+  block_chunks: 4
   qkv_bias: true
   proj_bias: true
   ffn_bias: true
@@ -99,8 +93,8 @@ optim:
   epochs: 100
   weight_decay: 0.04
   weight_decay_end: 0.4
-  base_lr: 0.004  # learning rate for a batch size of 1024
-  lr: 0.  # will be set after applying scaling rule
+  base_lr: 0.004
+  lr: 0.0007071067811865476
   warmup_epochs: 10
   min_lr: 1.0e-06
   clip_grad: 3.0
