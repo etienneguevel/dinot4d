@@ -89,24 +89,24 @@ def make_custom_dataset(
 
     return dataset
 
+
 def make_labelled_dataset(
-    dataset_path: str,
     labelled_dataset_path: str,
+    dataset_path: Optional[str] = None,
 ):
     """
     Creates a labelled dataset with the specified parameters.
     Args:
-        dataset_path: A path of the folder where the data is contained.
-        labelled_dataset_path: A path to the file containing the data and the labels.
+        labelled_dataset_path: A path to the file containing the labels of images, of a folder with folders named after the label containing images.
+        dataset_path: Change the folder where to fetch the image name.
     Returns:
         The created dataset.
     """
     transform = make_classification_train_transform()
-    dataset = LabelledDataset(
-        root=dataset_path, data_path=labelled_dataset_path, transform=transform
-    )
+    dataset = LabelledDataset(data_path=labelled_dataset_path, root=dataset_path, transform=transform)
 
     return dataset
+
 
 def make_dataset(
     *,

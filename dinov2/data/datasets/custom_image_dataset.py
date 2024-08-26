@@ -1,9 +1,8 @@
 import os
 import random
 import pandas as pd
-import torch
 
-from typing import List
+from typing import List, Optional
 from pathlib import PosixPath
 from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
@@ -110,19 +109,23 @@ class ImageDataset(Dataset):
 class LabelledDataset(Dataset):
     def __init__(
         self,
-        root: str,
         data_path: str,
+        root: Optional[str] = None,
         transform=None,
     ):
         self.root = root
-        self.images_list, self.labels = self._get_images_and_labels(data_path)
         self.transform = transform
+        self.images_list, self.labels = self._get_images_and_labels(data_path)
+        self.translate_dict = self._make_translate_dict()
 
     def _get_images_and_labels(self, data_path: str) -> tuple[list]:
         match data_path:
             case str(s) if s.endswith(".csv"):
                 df = pd.read_csv(data_path)
                 images_list, labels = df["names"].tolist(), df["pseudo_labels"].tolist()
+
+                if self.root:
+                    images_list = [os.path.join(self.root, im.split("/")[-1]) for im in images_list]
 
             case str(s) if os.path.isdir(s):
                 images_list, labels = [], []
@@ -131,7 +134,7 @@ class LabelledDataset(Dataset):
                     images = [
                         os.path.join(s, f, im)
                         for im in os.listdir(os.path.join(s, f))
-                        if im.endswith([".png", ".jpg", ".jpeg", ".tiff"])
+                        if im.endswith((".png", ".jpg", ".jpeg", ".tiff"))
                     ]
                     images_list.extend(images)
                     labels.extend([f] * len(images))
@@ -139,11 +142,14 @@ class LabelledDataset(Dataset):
             case _:
                 raise SyntaxError("The data_path format isn't recognized.")
 
-        return images_list, torch.tensor(labels)
+        return images_list, labels
+
+    def _make_translate_dict(self):
+
+        return {label: i for i, label in enumerate(set(self.labels))}
 
     def _get_image_data(self, index: int):
-        img_name = self.images_list[index].split("/")[-1]
-        path = os.path.join(self.root, img_name)
+        path = self.images_list[index]
         with open(path, "rb") as f:
             image_data = f.read()
 
@@ -155,11 +161,12 @@ class LabelledDataset(Dataset):
     def __getitem__(self, index: int):
         try:
             image_data = self._get_image_data(index)
+            label = self.translate_dict[self.labels[index]]
             image = ImageDataDecoder(image_data).decode()
         except Exception as e:
-            raise RuntimeError(f"can nor read image for sample {index}") from e
+            raise RuntimeError(f"can not read image for sample {index}") from e
 
         if self.transform is not None:
             image = self.transform(image)
 
-        return image, self.labels[index]
+        return image, label
