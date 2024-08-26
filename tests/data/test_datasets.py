@@ -22,6 +22,7 @@ def test_single_path():
         assert len(i) == 32
         break
 
+
 def test_several_paths():
     transform = transforms.Compose(
         [
@@ -42,11 +43,12 @@ def test_several_paths():
             if f.lower().endswith((".png", ".jpg", ".jpeg", ".tiff"))
         ]
     )
-    assert dataset.__len__() == expected_length
+    assert len(dataset) == expected_length, f"expected length is {expected_length}, dataset length is {len(dataset)}"
     dataloader = DataLoader(dataset, batch_size=32)
     for i in dataloader:
         assert len(i) == 32
         break
+
 
 if __name__ == "__main__":
     test_single_path()

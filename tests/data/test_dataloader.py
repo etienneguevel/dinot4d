@@ -91,7 +91,9 @@ def test_several_paths():
     )
 
     dirs = [Path(__file__).parent / i for i in ["dataset1", "dataset2"]]
+    print(dirs)
     dataset = ImageDataset(root=dirs, transform=data_transform)
+    print(len(dataset))
     sampler_type = SamplerType.SHARDED_INFINITE
     data_loader = make_data_loader(
         dataset=dataset,

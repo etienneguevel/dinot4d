@@ -1,10 +1,10 @@
 import os
 import random
 import pandas as pd
+import torch
 
-from typing import List, Tuple
+from typing import List
 from pathlib import PosixPath
-from PIL import Image
 from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
 from .decoders import ImageDataDecoder
@@ -29,18 +29,23 @@ class ImageDataset(Dataset):
 
     def _get_images(self, path):
         images = []
-
         match path:
-            case str(p) | PosixPath(p):
+            case str() | PosixPath():
+                p = path
                 preserve = p in self.path_preserved
                 try:
-                    images.extend(self._retrieve_from_path(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
+                    images.extend(
+                        self._retrieve_from_path(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid)
+                    )
                 except OSError:
-                        print(f"the path indicated at {p} cannot be found.")
+                    print(f"the path indicated at {p} cannot be found.")
 
             case list():
                 for p in path:
-                    self._get_images(p)
+                    images.extend(self._get_images(p))
+
+            case _:
+                raise SyntaxError("The entry is neither a list or a str")
 
         return images
 
@@ -87,7 +92,7 @@ class ImageDataset(Dataset):
 
         return image_data
 
-    def __len__(self)->int:
+    def __len__(self) -> int:
         return len(self.images_list)
 
     def __getitem__(self, index: int):
@@ -95,28 +100,45 @@ class ImageDataset(Dataset):
             image_data = self._get_image_data(index)
             image = ImageDataDecoder(image_data).decode()
         except Exception as e:
-            raise RuntimeError(f"can nor read image for sample {index}") from e
-
+            raise RuntimeError(f"Can nor read image for sample {index}") from e
         if self.transform is not None:
             image = self.transform(image)
 
         return image
 
+
 class LabelledDataset(Dataset):
     def __init__(
-            self,
-            root: str,
-            data_path: str,
-            transform=None,
+        self,
+        root: str,
+        data_path: str,
+        transform=None,
     ):
         self.root = root
         self.images_list, self.labels = self._get_images_and_labels(data_path)
         self.transform = transform
 
-    def _get_images_and_labels(self, data_path: str)->Tuple[List]:
-        df = pd.read_csv(data_path)
-        images_list, labels = df["names"].tolist(), df["pseudo_labels"].tolist()
-        
+    def _get_images_and_labels(self, data_path: str) -> tuple[list]:
+        match data_path:
+            case str(s) if s.endswith(".csv"):
+                df = pd.read_csv(data_path)
+                images_list, labels = df["names"].tolist(), df["pseudo_labels"].tolist()
+
+            case str(s) if os.path.isdir(s):
+                images_list, labels = [], []
+                folders = [e for e in os.listdir(s) if os.path.isdir(os.path.join(s, e))]
+                for f in folders:
+                    images = [
+                        os.path.join(s, f, im)
+                        for im in os.listdir(os.path.join(s, f))
+                        if im.endswith([".png", ".jpg", ".jpeg", ".tiff"])
+                    ]
+                    images_list.extend(images)
+                    labels.extend([f] * len(images))
+
+            case _:
+                raise SyntaxError("The data_path format isn't recognized.")
+
         return images_list, torch.tensor(labels)
 
     def _get_image_data(self, index: int):
@@ -127,9 +149,9 @@ class LabelledDataset(Dataset):
 
         return image_data
 
-    def __len__(self)-> int:
+    def __len__(self) -> int:
         return len(self.images_list)
-        
+
     def __getitem__(self, index: int):
         try:
             image_data = self._get_image_data(index)
