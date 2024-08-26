@@ -66,25 +66,44 @@ def _parse_dataset_str(dataset_str: str):
 
 
 def make_custom_dataset(
-    root_path: Union[str, list],
+    dataset_path: Union[str, list],
     transform: Optional[Callable] = None,
     path_preserved: List[str] = [],
     frac: float = 0.1,
     check_images: bool = False,
 ):
+    """
+    Creates a custom dataset with the specified parameters.
+    Args:
+        dataset_path: A path, or a list of paths, of the folder(s) to use to build the dataset.
+        transform: A transform to apply to images.
+        path_preserved: A list of folders path from which we want to preserve a part of the data.
+        frac: fraction of the data we want to preserve.
+        check_images: whether we want to test the images before including them.
+    Returns:
+        The created dataset.
+    """
     dataset = ImageDataset(
-        root=root_path, transform=transform, path_preserved=path_preserved, frac=frac, is_valid=check_images
+        root=dataset_path, transform=transform, path_preserved=path_preserved, frac=frac, is_valid=check_images
     )
 
     return dataset
 
 def make_labelled_dataset(
-    root_path: str,
     dataset_path: str,
+    labelled_dataset_path: str,
 ):
+    """
+    Creates a labelled dataset with the specified parameters.
+    Args:
+        dataset_path: A path of the folder where the data is contained.
+        labelled_dataset_path: A path to the file containing the data and the labels.
+    Returns:
+        The created dataset.
+    """
     transform = make_classification_train_transform()
     dataset = LabelledDataset(
-        root=root_path, data_path=dataset_path, transform=transform
+        root=dataset_path, data_path=labelled_dataset_path, transform=transform
     )
 
     return dataset

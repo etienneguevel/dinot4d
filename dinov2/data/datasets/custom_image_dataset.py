@@ -1,9 +1,9 @@
 import os
-import pathlib
 import random
 import pandas as pd
 
 from typing import List, Tuple
+from pathlib import PosixPath
 from PIL import Image
 from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
@@ -25,32 +25,26 @@ class ImageDataset(Dataset):
         self.frac = frac
         self.preserved_images = []
         self.is_valid = is_valid
-        self.images_list = self._get_image_list()
+        self.images_list = self._get_images(root)
 
-    def _get_image_list(self):
+    def _get_images(self, path):
         images = []
 
-        if isinstance(self.root, (str, pathlib.PosixPath)):
-            try:
-                p = self.root
+        match path:
+            case str(p) | PosixPath(p):
                 preserve = p in self.path_preserved
-                images.extend(self._retrieve_images(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
-
-            except OSError:
-                print("The root given is nor a list nor a path")
-
-        else:
-            for p in self.root:
                 try:
-                    preserve = p in self.path_preserved
-                    images.extend(self._retrieve_images(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
-
+                    images.extend(self._retrieve_from_path(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid))
                 except OSError:
-                    print(f"the path indicated at {p} cannot be found.")
+                        print(f"the path indicated at {p} cannot be found.")
+
+            case list():
+                for p in path:
+                    self._get_images(p)
 
         return images
 
-    def _retrieve_images(self, path, is_valid=True, preserve=False, frac=1):
+    def _retrieve_from_path(self, path, is_valid=True, preserve=False, frac=1):
         images_ini = len(self.preserved_images)
         images = []
         for root, _, files in os.walk(path):
@@ -93,7 +87,7 @@ class ImageDataset(Dataset):
 
         return image_data
 
-    def __len__(self):
+    def __len__(self)->int:
         return len(self.images_list)
 
     def __getitem__(self, index: int):
@@ -119,22 +113,23 @@ class LabelledDataset(Dataset):
         self.images_list, self.labels = self._get_images_and_labels(data_path)
         self.transform = transform
 
-    def __len__(self)-> int:
-        return len(self.images_list)
-
     def _get_images_and_labels(self, data_path: str)->Tuple[List]:
         df = pd.read_csv(data_path)
-
-        return df["names"].tolist(), df["pseudo_labels"].tolist()
+        images_list, labels = df["names"].tolist(), df["pseudo_labels"].tolist()
+        
+        return images_list, torch.tensor(labels)
 
     def _get_image_data(self, index: int):
         img_name = self.images_list[index].split("/")[-1]
-        path = os.join(self.root, img_name)
+        path = os.path.join(self.root, img_name)
         with open(path, "rb") as f:
             image_data = f.read()
 
         return image_data
 
+    def __len__(self)-> int:
+        return len(self.images_list)
+        
     def __getitem__(self, index: int):
         try:
             image_data = self._get_image_data(index)

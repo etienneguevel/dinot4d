@@ -1,0 +1,35 @@
+train:
+  dataset_path: /data/manon/Single_cells/medhi
+  path_preserved:
+  centering: sinkhorn_knopp
+  batch_size_per_gpu: 32
+  output_dir: /home/guevel/models/vitl_dainobloom
+  OFFICIAL_EPOCH_LENGTH: 500
+dino:
+  head_n_prototypes: 131072
+  head_bottleneck_dim: 384
+ibot:
+  separate_head: true
+  head_n_prototypes: 131072
+daino:
+  loss_weight: 1.0
+  labelled_batch_size_per_gpu: 8
+  labelled_dataset_path: /home/guevel/OT4D/dino_manon/data/df_medhi_100.csv
+student:
+  arch: vit_large
+  pretrained_path: /home/guevel/OT4D/models/dinobloom/DinoBloom-L.pth
+  patch_size: 14
+  drop_path_rate: 0.4
+  ffn_layer: swiglufused
+  block_chunks: 4
+  num_register_tokens: 0
+teacher:
+  momentum_teacher: 0.994
+optim:
+  epochs: 100
+  weight_decay_end: 0.2
+  base_lr: 2.0e-04  # learning rate for a batch size of 1024
+  warmup_epochs: 80
+  layerwise_decay: 1.0
+crops:
+  local_crops_size: 98

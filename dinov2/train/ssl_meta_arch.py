@@ -372,10 +372,12 @@ class SSLMetaArch(nn.Module):
         if do_daino:
             assert labelled_data is not None, "daino is activated but no labelled data is given"
             labelled_imgs, labels = labelled_data
-
+            student_labelled_backbone_output_dict = self.student.backbone(
+                labelled_imgs, masks=None, is_training=True
+            )
+            student_labelled_cls_tokens = student_labelled_backbone_output_dict["x_norm_clstoken"]
             # compute labelled loss
-            labelled_student_cls_token = self.student.backbone(labelled_imgs)["x_norm_clstoken"]
-            labelled_loss = nn.functional.cross_entropy(labelled_student_cls_token, labels)
+            labelled_loss = nn.functional.cross_entropy(student_labelled_cls_tokens, labels)
 
             # store for display
             loss_dict["labelled_loss"] = labelled_loss

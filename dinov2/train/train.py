@@ -191,7 +191,7 @@ def do_train(cfg, model, resume=False):
     # make datasets
 
     dataset = make_custom_dataset(
-        root_path=cfg.train.dataset_path,
+        cfg.train.dataset_path,
         transform=data_transform,
         path_preserved=cfg.train.path_preserved,
         frac=cfg.train.frac,
@@ -199,8 +199,8 @@ def do_train(cfg, model, resume=False):
     
     if do_daino:
         labelled_dataset = make_labelled_dataset(
-            root_path=cfg.train.dataset_path,
-            dataset_path=cfg.daino.labelled_dataset_path,
+            cfg.train.dataset_path,
+            cfg.daino.labelled_dataset_path,
         )
 
     # save the preserved images, if necessary

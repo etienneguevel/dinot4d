@@ -17,16 +17,10 @@ def test_single_path():
     )
 
     dataset = ImageDataset(path_dataset_test, transform=transform)
-
     dataloader = DataLoader(dataset, batch_size=32)
     for i in dataloader:
         assert len(i) == 32
         break
-
-
-base_path = Path(os.getcwd())
-dirs = ["dataset1", "dataset2"]
-
 
 def test_several_paths():
     transform = transforms.Compose(
@@ -37,8 +31,8 @@ def test_several_paths():
         ]
     )
 
+    dirs = ["dataset1", "dataset2"]
     dataset = ImageDataset(root=dirs, transform=transform)
-
     expected_length = len(
         [
             f
@@ -49,12 +43,10 @@ def test_several_paths():
         ]
     )
     assert dataset.__len__() == expected_length
-
     dataloader = DataLoader(dataset, batch_size=32)
     for i in dataloader:
         assert len(i) == 32
         break
-
 
 if __name__ == "__main__":
     test_single_path()
