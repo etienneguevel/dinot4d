@@ -199,8 +199,8 @@ def do_train(cfg, model, resume=False):
     
     if do_daino:
         labelled_dataset = make_labelled_dataset(
-            cfg.train.dataset_path,
             cfg.daino.labelled_dataset_path,
+            cfg.train.dataset_path,
         )
         print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
@@ -242,8 +242,8 @@ def do_train(cfg, model, resume=False):
 
     # A bit of verbose for information sake
 
-    print("There are {} images in the unlabelled dataset used".format(dataset.__len__()))
-    print("There are {} images in the labelled dataset used".format(labelled_dataset.__len__()))
+    print("There are {} images in the unlabelled dataset used".format(len(dataset)))
+    print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
     
     # training loop
 
@@ -279,11 +279,12 @@ def do_train(cfg, model, resume=False):
 
         optimizer.zero_grad(set_to_none=True)
         if do_daino:
-            labelled_data = next(labelled_iterator)
+            images, labels = next(labelled_iterator)
+            labels = torch.tensor(labels, device="gpu")
             loss_dict = model.forward_backward(
                 data,
                 teacher_temp=teacher_temp, 
-                labelled_data=labelled_data
+                labelled_data=(images, labels)
             )
 
         else:
