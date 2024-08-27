@@ -120,14 +120,14 @@ class LabelledDataset(Dataset):
 
     def _get_images_and_labels(self, data_path: str) -> tuple[list]:
         match data_path:
-            case str(s) if s.endswith(".csv"):
+            case str() | PosixPath() as s if str(s).endswith(".csv"):
                 df = pd.read_csv(data_path)
                 images_list, labels = df["names"].tolist(), df["pseudo_labels"].tolist()
 
                 if self.root:
                     images_list = [os.path.join(self.root, im.split("/")[-1]) for im in images_list]
 
-            case str(s) if os.path.isdir(s):
+            case str() | PosixPath() as s if os.path.isdir(s):
                 images_list, labels = [], []
                 folders = [e for e in os.listdir(s) if os.path.isdir(os.path.join(s, e))]
                 for f in folders:

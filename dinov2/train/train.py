@@ -202,6 +202,7 @@ def do_train(cfg, model, resume=False):
             cfg.train.dataset_path,
             cfg.daino.labelled_dataset_path,
         )
+        print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
     # save the preserved images, if necessary
 

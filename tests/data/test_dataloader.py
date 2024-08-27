@@ -12,8 +12,8 @@ from dinov2.data import (
     make_data_loader,
 )
 
-cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
 
+cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
 
 def test_single_path():
     img_size = cfg.crops.global_crops_size
@@ -91,9 +91,7 @@ def test_several_paths():
     )
 
     dirs = [Path(__file__).parent / i for i in ["dataset1", "dataset2"]]
-    print(dirs)
     dataset = ImageDataset(root=dirs, transform=data_transform)
-    print(len(dataset))
     sampler_type = SamplerType.SHARDED_INFINITE
     data_loader = make_data_loader(
         dataset=dataset,
