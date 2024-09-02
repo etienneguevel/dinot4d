@@ -18,6 +18,7 @@ from torch import nn
 
 logger = logging.getLogger("dinov2")
 
+
 def load_pretrained_weights(model, pretrained_weights, checkpoint_key):
     if urlparse(pretrained_weights).scheme:  # If it looks like an URL
         state_dict = torch.hub.load_state_dict_from_url(pretrained_weights, map_location="cpu")

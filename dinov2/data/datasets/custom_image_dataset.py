@@ -2,7 +2,7 @@ import os
 import random
 import pandas as pd
 
-from typing import List, Optional
+from typing import List, Optional, Union
 from pathlib import PosixPath
 from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
@@ -12,21 +12,21 @@ from .decoders import ImageDataDecoder
 class ImageDataset(Dataset):
     def __init__(
         self,
-        root,
+        root: Union[str, List[str], PosixPath],
         transform=None,
-        path_preserved: List[str] = [],
+        path_preserved: Optional[Union[List[str], ListConfig[str], str]] = None,
         frac: float = 0.1,
-        is_valid=True,
+        is_valid: bool = True,
     ):
         self.root = root
         self.transform = transform
-        self.path_preserved = path_preserved if isinstance(path_preserved, (list, ListConfig)) else [path_preserved]
+        self.path_preserved = list(path_preserved)
         self.frac = frac
         self.preserved_images = []
         self.is_valid = is_valid
         self.images_list = self._get_images(root)
 
-    def _get_images(self, path):
+    def _get_images(self, path: str):
         images = []
         match path:
             case str() | PosixPath():
@@ -48,7 +48,7 @@ class ImageDataset(Dataset):
 
         return images
 
-    def _retrieve_from_path(self, path, is_valid=True, preserve=False, frac=1):
+    def _retrieve_from_path(self, path: str, is_valid: bool = True, preserve: bool = False, frac: float = 1):
         images_ini = len(self.preserved_images)
         images = []
         for root, _, files in os.walk(path):

@@ -196,7 +196,7 @@ def do_train(cfg, model, resume=False):
         path_preserved=cfg.train.path_preserved,
         frac=cfg.train.frac,
     )
-    
+
     if do_daino:
         labelled_dataset = make_labelled_dataset(
             cfg.daino.labelled_dataset_path,
@@ -213,7 +213,7 @@ def do_train(cfg, model, resume=False):
         )
 
     # setup the unlabelled data loader
-    
+
     sampler_type = SamplerType.SHARDED_INFINITE  # define the sampler to use for fsdp
     data_loader = make_data_loader(
         dataset=dataset,
@@ -244,7 +244,7 @@ def do_train(cfg, model, resume=False):
 
     print("There are {} images in the unlabelled dataset used".format(len(dataset)))
     print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
-    
+
     # training loop
 
     iteration = start_iter
@@ -260,8 +260,8 @@ def do_train(cfg, model, resume=False):
         header,
         max_iter,
         start_iter,
-    ):  
-        
+    ):
+
         current_batch_size = data["collated_global_crops"].shape[0] / 2
         if iteration > max_iter:
             return
@@ -280,16 +280,12 @@ def do_train(cfg, model, resume=False):
         optimizer.zero_grad(set_to_none=True)
         if do_daino:
             images, labels = next(labelled_iterator)
-            labels = torch.tensor(labels, device="gpu")
-            loss_dict = model.forward_backward(
-                data,
-                teacher_temp=teacher_temp, 
-                labelled_data=(images, labels)
-            )
+            labels = labels.to("cuda")
+            loss_dict = model.forward_backward(data, teacher_temp=teacher_temp, labelled_data=(images, labels))
 
         else:
             loss_dict = model.forward_backward(data, teacher_temp=teacher_temp)
-        
+
         # clip gradients
 
         if fp16_scaler is not None:
