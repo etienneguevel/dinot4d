@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from dinov2.data.datasets import ImageDataset, LabelledDataset
 from dinov2.data.transforms import make_classification_train_transform
 
+
 def test_single_path():
     path_dataset_test = Path(__file__).parent / "dataset1"
     transform = transforms.Compose(
@@ -49,6 +50,7 @@ def test_several_paths():
         assert len(i) == 32
         break
 
+
 def test_labelled_dataset():
     path_dataset_test = Path(__file__).parent / "dataset1"
     transform = make_classification_train_transform()
@@ -66,6 +68,7 @@ def test_labelled_dataset():
     for ims, labels in dataloader:
         assert len(ims) == 32, f"batchsize should be 32, it is {len(ims)}"
         break
+
 
 if __name__ == "__main__":
     test_single_path()

@@ -55,7 +55,7 @@ class SSLMetaArch(nn.Module):
             if len(keys) > 0:
                 key = sorted(keys)[0]
                 load_pretrained_weights(student_backbone, ckpt_path, key)
-            
+
             else:
                 raise ValueError("there are no keys recognized in the model dict")
 
@@ -372,9 +372,7 @@ class SSLMetaArch(nn.Module):
         if do_daino:
             assert labelled_data is not None, "daino is activated but no labelled data is given"
             labelled_imgs, labels = labelled_data
-            student_labelled_backbone_output_dict = self.student.backbone(
-                labelled_imgs, masks=None, is_training=True
-            )
+            student_labelled_backbone_output_dict = self.student.backbone(labelled_imgs, masks=None, is_training=True)
             student_labelled_cls_tokens = student_labelled_backbone_output_dict["x_norm_clstoken"]
             # compute labelled loss
             labelled_loss = nn.functional.cross_entropy(student_labelled_cls_tokens, labels)
@@ -387,9 +385,8 @@ class SSLMetaArch(nn.Module):
             n_lab = len(labelled_imgs)
 
             # accumulate loss
-            loss_accumulator = (
-                (loss_accumulator * n_unlab) / (n_unlab + n_lab) +
-                (labelled_loss * n_lab) / (n_unlab + n_lab)
+            loss_accumulator = (loss_accumulator * n_unlab) / (n_unlab + n_lab) + (labelled_loss * n_lab) / (
+                n_unlab + n_lab
             )
 
         self.backprop_loss(loss_accumulator)

@@ -2,7 +2,7 @@ import os
 import random
 import pandas as pd
 
-from typing import List, Optional
+from typing import List, Optional, Union
 from pathlib import PosixPath
 from omegaconf.listconfig import ListConfig
 from torch.utils.data import Dataset
@@ -10,23 +10,41 @@ from .decoders import ImageDataDecoder
 
 
 class ImageDataset(Dataset):
+    """
+    Class to load images from a directory or a list of directories.
+    This dataset is made for Self-Supervised Learning tasks, as no labels are loaded.
+
+    Args:
+        root: str or list of str, the path to the directory or a list of directories where the images are stored.
+        transform: callable, a function/transform.
+        path_preserved: list of str or str, the path or list of paths that will be preserved for validation.
+        frac: float, the fraction of images that will be preserved for validation.
+        is_valid: bool, if True, the images will be checked for validity.
+
+    Returns:
+        image: torch.Tensor, the image at the given index.
+    """
+
     def __init__(
         self,
-        root,
+        root: Union[str, List[str], PosixPath],
         transform=None,
-        path_preserved: List[str] = [],
+        path_preserved: Optional[Union[List[str], ListConfig[str], str]] = None,
         frac: float = 0.1,
-        is_valid=True,
+        is_valid: bool = True,
     ):
         self.root = root
         self.transform = transform
-        self.path_preserved = path_preserved if isinstance(path_preserved, (list, ListConfig)) else [path_preserved]
+        self.path_preserved = list(path_preserved)
         self.frac = frac
         self.preserved_images = []
         self.is_valid = is_valid
         self.images_list = self._get_images(root)
 
-    def _get_images(self, path):
+    def _get_images(self, path: str):
+        """
+        Function to retrieves images from a directory or a list of directories.
+        """
         images = []
         match path:
             case str() | PosixPath():
@@ -48,7 +66,17 @@ class ImageDataset(Dataset):
 
         return images
 
-    def _retrieve_from_path(self, path, is_valid=True, preserve=False, frac=1):
+    def _retrieve_from_path(self, path: str, is_valid: bool = True, preserve: bool = False, frac: float = 0.1):
+        """
+        Function to retrieve images from a directory. If there are subdirectories, the function will retrieve the images
+        from them as well.
+
+        Args:
+            path: str, the path to the directory.
+            is_valid: bool, if True, the images will be checked for validity.
+            preserve: bool, if True, a fraction of the images of each subdirectories will be preserved for validation.
+            frac: float, the fraction of images that will be preserved for validation.
+        """
         images_ini = len(self.preserved_images)
         images = []
         for root, _, files in os.walk(path):
@@ -58,13 +86,12 @@ class ImageDataset(Dataset):
                     im = os.path.join(root, file)
                     if is_valid:
                         try:
-                            with open(im, "rb") as f:
-                                image_data = f.read()
-                            ImageDataDecoder(image_data).decode()
+                            _ = self._get_image_data(im)
                             images_dir.append(im)
 
                         except OSError:
                             print(f"Image at path {im} could not be opened.")
+
                     else:
                         images_dir.append(im)
 
@@ -80,24 +107,25 @@ class ImageDataset(Dataset):
 
         images_end = len(self.preserved_images)
         if preserve:
-            print(f"{images_end - images_ini} images have been saved for the dataset at path {path}")
+            print(f"{images_end - images_ini} images have been retrieved for the dataset at path {path}")
 
         return images
 
-    def _get_image_data(self, index: int):
-        path = self.images_list[index]
+    def _get_image_data(self, path: str):
         with open(path, "rb") as f:
             image_data = f.read()
 
-        return image_data
+        image = ImageDataDecoder(image_data).decode()
+        return image
 
     def __len__(self) -> int:
         return len(self.images_list)
 
     def __getitem__(self, index: int):
         try:
-            image_data = self._get_image_data(index)
-            image = ImageDataDecoder(image_data).decode()
+            path = self.images_list[index]
+            image = self._get_image_data(path)
+
         except Exception as e:
             raise RuntimeError(f"Can nor read image for sample {index}") from e
         if self.transform is not None:
@@ -107,6 +135,19 @@ class ImageDataset(Dataset):
 
 
 class LabelledDataset(Dataset):
+    """
+    Class to load images from a directory.
+    This dataset is made for Supervised Learning tasks, as labels are expected.
+
+    Args:
+        data_path: str or list of str, the path to the directory or a csv file indicating where the images are at.
+        root: Optional[str], if paths are not absolutes, the root directory where the images are stored.
+        transform: callable, a function/transform.
+
+    Returns:
+        image: torch.Tensor, the image at the given index.
+    """
+
     def __init__(
         self,
         data_path: str,
@@ -145,26 +186,26 @@ class LabelledDataset(Dataset):
         return images_list, labels
 
     def _make_translate_dict(self):
-
         return {label: i for i, label in enumerate(set(self.labels))}
 
-    def _get_image_data(self, index: int):
-        path = self.images_list[index]
+    def _get_image_data(self, path: str):
         with open(path, "rb") as f:
             image_data = f.read()
 
-        return image_data
+        image = ImageDataDecoder(image_data).decode()
+        return image
 
     def __len__(self) -> int:
         return len(self.images_list)
 
     def __getitem__(self, index: int):
         try:
-            image_data = self._get_image_data(index)
+            path = self.images_list[index]
+            image = self._get_image_data(path)
             label = self.translate_dict[self.labels[index]]
-            image = ImageDataDecoder(image_data).decode()
+
         except Exception as e:
-            raise RuntimeError(f"can not read image for sample {index}") from e
+            raise RuntimeError(f"can not read image @ {path}") from e
 
         if self.transform is not None:
             image = self.transform(image)

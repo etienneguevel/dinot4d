@@ -7,9 +7,9 @@ import argparse
 import logging
 import math
 import os
-import torch
-
 from functools import partial
+
+import torch
 from fvcore.common.checkpoint import PeriodicCheckpointer
 
 import dinov2.distributed as distributed
@@ -136,15 +136,13 @@ def do_train(cfg, model, resume=False):
     fp16_scaler = model.fp16_scaler  # for mixed precision training
     do_daino = cfg.daino.loss_weight > 0
 
-    # setup optimizer
-
+    # Setup optimizer
     optimizer = build_optimizer(cfg, model.get_params_groups())
     (lr_schedule, wd_schedule, momentum_schedule, teacher_temp_schedule, last_layer_lr_schedule,) = build_schedulers(
         cfg
     )  # create training parameters that depends on the epochs
 
-    # checkpointer
-
+    # Checkpointer
     checkpointer = FSDPCheckpointer(
         model, cfg.train.output_dir, optimizer=optimizer, save_to_disk=True
     )  # make a checkpointer that saves periodically in fsdp fashion in order to retake training if some workers fail
@@ -161,8 +159,7 @@ def do_train(cfg, model, resume=False):
         max_to_keep=2,
     )  # wrap the checkpointer to tune the frequency to save and the number of versions to keep
 
-    # setup data preprocessing
-
+    # Setup data preprocessing
     img_size = cfg.crops.global_crops_size
     patch_size = cfg.student.patch_size
     n_tokens = (img_size // patch_size) ** 2
@@ -188,15 +185,14 @@ def do_train(cfg, model, resume=False):
         dtype=inputs_dtype,
     )
 
-    # make datasets
-
+    # Make datasets
     dataset = make_custom_dataset(
         cfg.train.dataset_path,
         transform=data_transform,
         path_preserved=cfg.train.path_preserved,
         frac=cfg.train.frac,
     )
-    
+
     if do_daino:
         labelled_dataset = make_labelled_dataset(
             cfg.daino.labelled_dataset_path,
@@ -204,16 +200,14 @@ def do_train(cfg, model, resume=False):
         )
         print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
-    # save the preserved images, if necessary
-
+    # Save the preserved images, if necessary
     if dataset.preserved_images:
         write_list(
             os.path.join(cfg.train.output_dir, "preserved_images.pkl"),
             dataset.preserved_images,
         )
 
-    # setup the unlabelled data loader
-    
+    # Setup the unlabelled data loader
     sampler_type = SamplerType.SHARDED_INFINITE  # define the sampler to use for fsdp
     data_loader = make_data_loader(
         dataset=dataset,
@@ -227,8 +221,7 @@ def do_train(cfg, model, resume=False):
         collate_fn=collate_fn,
     )
 
-    # setup the labelled data generator
-
+    # Setup the labelled data generator
     if do_daino:
         labelled_dataloader = make_data_loader(
             dataset=labelled_dataset,
@@ -241,12 +234,10 @@ def do_train(cfg, model, resume=False):
         labelled_iterator = iter(labelled_dataloader)
 
     # A bit of verbose for information sake
-
     print("There are {} images in the unlabelled dataset used".format(len(dataset)))
     print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
-    
-    # training loop
 
+    # Training loop
     iteration = start_iter
 
     logger.info("Starting training from iteration {}".format(start_iter))
@@ -260,14 +251,13 @@ def do_train(cfg, model, resume=False):
         header,
         max_iter,
         start_iter,
-    ):  
-        
+    ):
+
         current_batch_size = data["collated_global_crops"].shape[0] / 2
         if iteration > max_iter:
             return
 
-        # apply schedules
-
+        # Apply schedules
         lr = lr_schedule[iteration]
         wd = wd_schedule[iteration]
         mom = momentum_schedule[iteration]
@@ -275,23 +265,17 @@ def do_train(cfg, model, resume=False):
         last_layer_lr = last_layer_lr_schedule[iteration]
         apply_optim_scheduler(optimizer, lr, wd, last_layer_lr)
 
-        # compute losses
-
+        # Compute losses
         optimizer.zero_grad(set_to_none=True)
         if do_daino:
             images, labels = next(labelled_iterator)
-            labels = torch.tensor(labels, device="gpu")
-            loss_dict = model.forward_backward(
-                data,
-                teacher_temp=teacher_temp, 
-                labelled_data=(images, labels)
-            )
+            labels = labels.to("cuda")
+            loss_dict = model.forward_backward(data, teacher_temp=teacher_temp, labelled_data=(images, labels))
 
         else:
             loss_dict = model.forward_backward(data, teacher_temp=teacher_temp)
-        
-        # clip gradients
 
+        # Clip gradients
         if fp16_scaler is not None:
             if cfg.optim.clip_grad:
                 fp16_scaler.unscale_(optimizer)
@@ -305,12 +289,10 @@ def do_train(cfg, model, resume=False):
                     v.clip_grad_norm_(cfg.optim.clip_grad)
             optimizer.step()
 
-        # perform teacher EMA update
-
+        # Perform teacher EMA update
         model.update_teacher(mom)
 
-        # logging
-
+        # Logging
         if distributed.get_global_size() > 1:
             for v in loss_dict.values():
                 torch.distributed.all_reduce(v)  # synchronize the gradients calculated on the different shards and gpus
@@ -328,14 +310,14 @@ def do_train(cfg, model, resume=False):
         metric_logger.update(current_batch_size=current_batch_size)
         metric_logger.update(total_loss=losses_reduced, **loss_dict_reduced)
 
-        # checkpointing and testing
-
+        # Checkpointing and testing
         if cfg.evaluation.eval_period_iterations > 0 and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0:
             do_test(cfg, model, f"training_{iteration}")
             torch.cuda.synchronize()
         periodic_checkpointer.step(iteration)
 
         iteration = iteration + 1
+
     metric_logger.synchronize_between_processes()
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 

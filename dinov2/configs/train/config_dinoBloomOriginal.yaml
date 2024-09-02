@@ -53,7 +53,7 @@ train:
   centering: sinkhorn_knopp
 
   drop_path_rate: 0.4
-  ffn_layer: swiglufused 
+  ffn_layer: swiglufused
   block_chunks: 0  # for distributed training
   num_register_tokens: 0  # 0 for no register tokens
 
@@ -84,7 +84,7 @@ crops:
   local_crops_size: 98
   local_crops_number: 1 #!!! bit hacky, 1 indicates NO LOCAL CROPS !!!
 dino:
-  head_bottleneck_dim: 256 #vits: 256, vitl: 384 
+  head_bottleneck_dim: 256 #vits: 256, vitl: 384
   smooth_rank_loss_weight: 0.0 #doesnt help
 
 # ---------------------------
