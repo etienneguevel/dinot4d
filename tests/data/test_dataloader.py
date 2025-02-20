@@ -15,6 +15,7 @@ from dinov2.data import (
 
 cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
 
+
 def test_single_path():
     img_size = cfg.crops.global_crops_size
     patch_size = cfg.student.patch_size
