@@ -235,7 +235,8 @@ def do_train(cfg, model, resume=False):
 
     # A bit of verbose for information sake
     print("There are {} images in the unlabelled dataset used".format(len(dataset)))
-    print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
+    if do_daino:
+        print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
 
     # Training loop
     iteration = start_iter

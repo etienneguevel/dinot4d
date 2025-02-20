@@ -71,9 +71,14 @@ def write_yaml(arch: str, batch_size: int, num_epochs: int, train_dataset: str, 
         "train": {
             "batch_size_per_gpu": batch_size,
             "OFFICIAL_EPOCH_LENGTH": num_epochs,
-            "train_dataset": train_dataset,
+            "dataset_path": train_dataset,
+            "path_preserved": [],
         },
-        "optim": {"epochs": 1},
+        "optim": {
+            "epochs": 1,
+            "warmup_epochs": 0,
+
+        },
     }
 
     output_path = output_dir / "config_added.yaml"

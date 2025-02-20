@@ -10,8 +10,6 @@ echo "Number of GPUs selected $NUM_GPUS"
 # Activate conda environment
 source activate /home/guevel/.conda/envs/cell_sim
 
-nvidia-smi
-
 torchrun --nproc_per_node=$NUM_GPUS dinov2/experiments/memory_probing.py \
     --dataset=$DATA_DIR \
     --output_dir=$OUTPUT_DIR \
