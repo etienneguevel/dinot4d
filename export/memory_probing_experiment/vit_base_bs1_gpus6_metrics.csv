@@ -1,0 +1,12 @@
+Metric,Value
+lr,0.00015511904001318813
+wd,0.21820000000000003
+mom,0.9959600000000001
+last_layer_lr,0.0
+current_batch_size,1.0
+total_loss,inf
+dino_local_crops_loss,9.94516481399536
+dino_global_crops_loss,1.2431412363052368
+koleo_loss,inf
+ibot_loss,2.8110360368092846
+memory,1214.83349609375

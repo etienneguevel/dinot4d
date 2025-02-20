@@ -97,7 +97,7 @@ def main():
 
     # Create the output_dir
     output_dir = ROOT_DIR / args.output_dir / f"{args.arch}_bs{args.batch_size}_gpus{args.num_gpus}"
-    if os.isdir(output_dir):
+    if os.path.isdir(output_dir):
         shutil.rmtree(output_dir, ignore_errors=True)
 
     os.makedirs(output_dir, exist_ok=True)
