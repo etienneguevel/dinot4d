@@ -3,7 +3,7 @@ import csv
 import logging
 import os
 import yaml
-from collections import namedtuple
+from argparse import Namespace
 
 import torch
 
@@ -14,7 +14,6 @@ from dinov2.utils.config import setup
 
 
 logger = logging.getLogger("dinov2")
-
 
 def get_args_parser():
 
@@ -54,6 +53,12 @@ def get_args_parser():
         type=int,
     )
 
+    # Indicate the number of GPUs used
+    parser.add_argument(
+        "--num_gpus",
+        type=int,
+    )
+
     return parser
 
 
@@ -71,7 +76,7 @@ def write_yaml(arch: str, batch_size: int, num_epochs: int, train_dataset: str, 
         "optim": {"epochs": 1},
     }
 
-    output_path = output_dir / "/config_added.yaml"
+    output_path = output_dir / "config_added.yaml"
     with open(output_path, "w") as f:
         logger.info(f"Writing config file at {output_path}")
         yaml.dump(cont, f)
@@ -93,7 +98,7 @@ def main():
     config_path = write_yaml(args.arch, args.batch_size, args.num_epochs, args.dataset, output_dir)
 
     # Merge the yaml file with the default one
-    args = namedtuple(
+    args = Namespace(
         output_dir=output_dir,
         config_file=config_path,
         opts=[],
