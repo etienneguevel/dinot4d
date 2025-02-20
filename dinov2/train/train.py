@@ -280,7 +280,7 @@ def do_train(cfg, model, resume=False):
         optimizer.zero_grad(set_to_none=True)
         if do_daino:
             images, labels = next(labelled_iterator)
-            labels = torch.tensor(labels, device="gpu")
+            labels = torch.tensor(labels, device="cuda")
             loss_dict = model.forward_backward(
                 data,
                 teacher_temp=teacher_temp, 
