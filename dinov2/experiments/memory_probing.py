@@ -2,6 +2,7 @@ import argparse
 import csv
 import logging
 import os
+import shutil
 import yaml
 from argparse import Namespace
 
@@ -14,6 +15,7 @@ from dinov2.utils.config import setup
 
 
 logger = logging.getLogger("dinov2")
+
 
 def get_args_parser():
 
@@ -77,7 +79,6 @@ def write_yaml(arch: str, batch_size: int, num_epochs: int, train_dataset: str, 
         "optim": {
             "epochs": 1,
             "warmup_epochs": 0,
-
         },
     }
 
@@ -96,6 +97,9 @@ def main():
 
     # Create the output_dir
     output_dir = ROOT_DIR / args.output_dir / f"{args.arch}_bs{args.batch_size}_gpus{args.num_gpus}"
+    if os.isdir(output_dir):
+        shutil.rmtree(output_dir, ignore_errors=True)
+
     os.makedirs(output_dir, exist_ok=True)
     logger.info(f"Writing to {output_dir}")
 
@@ -115,13 +119,13 @@ def main():
     model = SSLMetaArch(cfg).to(torch.device("cuda"))
     model.prepare_for_distributed_training()
 
-    logger.info("Model:\n{}".format(model))
+    # logger.info("Model:\n{}".format(model))
 
     # Train the model
     metrics = do_train(cfg, model)
 
     # Save the file
-    csv_file = args.train.output_dir + "/metrics.csv"
+    csv_file = output_dir / "metrics.csv"
     with open(csv_file, mode="w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["Metric", "Value"])
