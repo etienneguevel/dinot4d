@@ -271,11 +271,7 @@ def do_train(cfg, model, resume=False):
         if do_daino:
             images, labels = next(labelled_iterator)
             labels = torch.tensor(labels, device="cuda")
-            loss_dict = model.forward_backward(
-                data,
-                teacher_temp=teacher_temp, 
-                labelled_data=(images, labels)
-            )
+            loss_dict = model.forward_backward(data, teacher_temp=teacher_temp, labelled_data=(images, labels))
 
         else:
             loss_dict = model.forward_backward(data, teacher_temp=teacher_temp)
