@@ -1,4 +1,6 @@
 import logging
+import os
+import pytest
 
 from dinov2.train.ssl_meta_arch import SSLMetaArch
 from dinov2.configs import load_and_merge_config
@@ -18,8 +20,14 @@ def test_basic_loading():
 
 def test_pretrained_loading():
     cfg = load_and_merge_config("train/vitl_dainobloom")
-    model = SSLMetaArch(cfg)
-    logger.info("Model: \n{}".format(model))
+    if os.path.exists(cfg.student.pretrained_weights):
+        model = SSLMetaArch(cfg)
+        logger.info("Model: \n{}".format(model))
+    
+    else:
+        warning_msg = "Path to the pretrained weights non-existent, test skipped."
+        logger.warning(warning_msg)
+        pytest.skip("Path to the pretrained weights non-existent, test skipped.")
 
 
 if __name__ == "__main__":

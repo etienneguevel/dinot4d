@@ -65,7 +65,7 @@ def test_labelled_dataset():
     )
     assert len(dataset) == expected_length, f"expected length is {expected_length}, dataset length is {len(dataset)}"
     dataloader = DataLoader(dataset, batch_size=32)
-    for ims, labels in dataloader:
+    for ims, _ in dataloader:
         assert len(ims) == 32, f"batchsize should be 32, it is {len(ims)}"
         break
 
