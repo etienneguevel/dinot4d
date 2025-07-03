@@ -1,0 +1,1618 @@
+I20250703 18:50:15 2658142 dinov2 config.py:59] git:
+  sha: 0265aa8df2dbee9e204eac390544b271af489005, status: has uncommitted changes, branch: main
+
+I20250703 18:50:15 2658142 dinov2 config.py:60] config_file: /raid/home/guevel/OT4D/dinov2/tests/train/config.yaml
+opts: ['train.output_dir=/raid/home/guevel/OT4D/dinov2/tests/train/logs']
+output_dir: /raid/home/guevel/OT4D/dinov2/tests/train/logs
+I20250703 18:50:15 2658142 dinov2 config.py:26] sqrt scaling learning rate; base: 0.004, new: 0.0007071067811865476
+I20250703 18:50:15 2658142 dinov2 config.py:33] MODEL:
+  WEIGHTS: ''
+compute_precision:
+  grad_scaler: true
+  teacher:
+    backbone:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    dino_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    ibot_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+  student:
+    backbone:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    dino_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp32
+        buffer_dtype: fp32
+    ibot_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp32
+        buffer_dtype: fp32
+dino:
+  loss_weight: 1.0
+  head_n_prototypes: 65536
+  head_bottleneck_dim: 256
+  head_nlayers: 3
+  head_hidden_dim: 2048
+  koleo_loss_weight: 0.1
+ibot:
+  loss_weight: 1.0
+  mask_sample_probability: 0.5
+  mask_ratio_min_max:
+  - 0.1
+  - 0.5
+  separate_head: false
+  head_n_prototypes: 65536
+  head_bottleneck_dim: 256
+  head_nlayers: 3
+  head_hidden_dim: 2048
+daino:
+  loss_weight: 0.0
+  labelled_batch_size_per_gpu: 8
+  labelled_dataset_path: null
+train:
+  batch_size_per_gpu: 32
+  dataset_path: null
+  path_preserved: null
+  frac: 1
+  output_dir: /raid/home/guevel/OT4D/dinov2/tests/train/logs
+  saveckp_freq: 20
+  seed: 0
+  num_workers: 4
+  OFFICIAL_EPOCH_LENGTH: 1
+  cache_dataset: true
+  centering: centering
+student:
+  arch: vit_small
+  patch_size: 16
+  drop_path_rate: 0.3
+  layerscale: 1.0e-05
+  drop_path_uniform: true
+  pretrained_weights: ''
+  ffn_layer: mlp
+  block_chunks: 4
+  qkv_bias: true
+  proj_bias: true
+  ffn_bias: true
+  num_register_tokens: 0
+  interpolate_antialias: false
+  interpolate_offset: 0.1
+teacher:
+  momentum_teacher: 0.992
+  final_momentum_teacher: 1
+  warmup_teacher_temp: 0.04
+  teacher_temp: 0.07
+  warmup_teacher_temp_epochs: 30
+optim:
+  epochs: 100
+  weight_decay: 0.04
+  weight_decay_end: 0.4
+  base_lr: 0.004
+  lr: 0.0007071067811865476
+  warmup_epochs: 10
+  min_lr: 1.0e-06
+  clip_grad: 3.0
+  freeze_last_layer_epochs: 1
+  scaling_rule: sqrt_wrt_1024
+  patch_embed_lr_mult: 0.2
+  layerwise_decay: 0.9
+  adamw_beta1: 0.9
+  adamw_beta2: 0.999
+crops:
+  global_crops_scale:
+  - 0.32
+  - 1.0
+  local_crops_number: 8
+  local_crops_scale:
+  - 0.05
+  - 0.32
+  global_crops_size: 224
+  local_crops_size: 96
+evaluation:
+  eval_period_iterations: 12500
+
+I20250703 18:50:15 2658142 dinov2 vision_transformer.py:122] using MLP layer as FFN
+I20250703 18:50:15 2658142 dinov2 vision_transformer.py:122] using MLP layer as FFN
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:48] OPTIONS -- architecture : embed_dim: 384
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:71] OPTIONS -- DINO
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:73] OPTIONS -- DINO -- loss_weight: 1.0
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:74] OPTIONS -- DINO -- head_n_prototypes: 65536
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:75] OPTIONS -- DINO -- head_bottleneck_dim: 256
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:76] OPTIONS -- DINO -- head_hidden_dim: 2048
+I20250703 18:50:15 2658142 dinov2 ssl_meta_arch.py:88] OPTIONS -- DINO -- applying KOLEO regularization
+W20250703 18:50:15 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/nn/utils/weight_norm.py:143: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:98] OPTIONS -- IBOT
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:99] OPTIONS -- IBOT -- loss_weight: 1.0
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:100] OPTIONS -- IBOT masking -- ibot_mask_ratio_tuple: [0.1, 0.5]
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:101] OPTIONS -- IBOT masking -- ibot_mask_sample_probability: 0.5
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:124] OPTIONS -- IBOT -- head shared with DINO
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:134] Student and Teacher are built: they are both vit_small network.
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:457] DISTRIBUTED FSDP -- preparing model for distributed training
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py:430: UserWarning: FSDP is switching to use `NO_SHARD` instead of ShardingStrategy.SHARD_GRAD_OP since the world size is 1.
+  warnings.warn(
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x Identity()
+  (3-5): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-5): 6 x Identity()
+  (6-8): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-8): 9 x Identity()
+  (9-11): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x Identity()
+  (3-5): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-5): 6 x Identity()
+  (6-8): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:50:16 2658142 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-8): 9 x Identity()
+  (9-11): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+I20250703 18:50:16 2658142 dinov2 test_train.py:42] Model:
+ SSLMetaArch(
+  (dino_loss): DINOLoss()
+  (koleo_loss): KoLeoLoss(
+    (pdist): PairwiseDistance()
+  )
+  (ibot_patch_loss): iBOTPatchLoss()
+  (student): ModuleDict(
+    (backbone): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DinoVisionTransformer(
+        (patch_embed): PatchEmbed(
+          (proj): Conv2d(3, 384, kernel_size=(16, 16), stride=(16, 16))
+          (norm): Identity()
+        )
+        (blocks): ModuleList(
+          (0): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (1): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x Identity()
+              (3-5): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (2): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-5): 6 x Identity()
+              (6-8): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (3): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-8): 9 x Identity()
+              (9-11): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+        )
+        (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (head): Identity()
+      )
+    )
+    (dino_head): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DINOHead(
+        (mlp): Sequential(
+          (0): Linear(in_features=384, out_features=2048, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=2048, out_features=2048, bias=True)
+          (3): GELU(approximate='none')
+          (4): Linear(in_features=2048, out_features=256, bias=True)
+        )
+        (last_layer): Linear(in_features=256, out_features=65536, bias=False)
+      )
+    )
+  )
+  (teacher): ModuleDict(
+    (backbone): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DinoVisionTransformer(
+        (patch_embed): PatchEmbed(
+          (proj): Conv2d(3, 384, kernel_size=(16, 16), stride=(16, 16))
+          (norm): Identity()
+        )
+        (blocks): ModuleList(
+          (0): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (1): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x Identity()
+              (3-5): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (2): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-5): 6 x Identity()
+              (6-8): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (3): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-8): 9 x Identity()
+              (9-11): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+        )
+        (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (head): Identity()
+      )
+    )
+    (dino_head): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DINOHead(
+        (mlp): Sequential(
+          (0): Linear(in_features=384, out_features=2048, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=2048, out_features=2048, bias=True)
+          (3): GELU(approximate='none')
+          (4): Linear(in_features=2048, out_features=256, bias=True)
+        )
+        (last_layer): Linear(in_features=256, out_features=65536, bias=False)
+      )
+    )
+  )
+)
+I20250703 18:50:16 2658142 dinov2 param_groups.py:54] chunked fsdp
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] cls_token: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] pos_embed: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mask_token: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] patch_embed.proj.weight: lr_multiplier: 0.05083731656658002, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] patch_embed.proj.bias: lr_multiplier: 0.05083731656658002, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.norm1.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.norm1.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.attn.qkv.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.attn.qkv.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.attn.proj.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.attn.proj.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.ls1.gamma: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.norm2.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.norm2.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.mlp.fc1.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.mlp.fc1.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.mlp.fc2.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.mlp.fc2.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.0.ls2.gamma: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.norm1.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.norm1.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.attn.qkv.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.attn.qkv.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.attn.proj.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.attn.proj.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.ls1.gamma: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.norm2.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.norm2.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.mlp.fc1.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.mlp.fc1.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.mlp.fc2.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.mlp.fc2.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.1.ls2.gamma: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.norm1.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.norm1.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.attn.qkv.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.attn.qkv.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.attn.proj.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.attn.proj.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.ls1.gamma: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.norm2.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.norm2.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.mlp.fc1.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.mlp.fc1.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.mlp.fc2.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.mlp.fc2.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.0.2.ls2.gamma: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.norm1.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.norm1.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.attn.qkv.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.attn.qkv.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.attn.proj.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.attn.proj.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.ls1.gamma: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.norm2.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.norm2.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.mlp.fc1.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.mlp.fc1.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.mlp.fc2.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.mlp.fc2.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.3.ls2.gamma: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.norm1.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.norm1.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.attn.qkv.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.attn.qkv.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.attn.proj.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.attn.proj.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.ls1.gamma: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.norm2.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.norm2.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.mlp.fc1.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.mlp.fc1.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.mlp.fc2.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.mlp.fc2.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.4.ls2.gamma: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.norm1.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.norm1.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.attn.qkv.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.attn.qkv.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.attn.proj.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.attn.proj.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.ls1.gamma: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.norm2.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.norm2.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.mlp.fc1.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.mlp.fc1.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.mlp.fc2.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.mlp.fc2.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.1.5.ls2.gamma: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.norm1.weight: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.norm1.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.attn.qkv.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.attn.qkv.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.attn.proj.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.attn.proj.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.ls1.gamma: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.norm2.weight: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.norm2.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.mlp.fc1.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.mlp.fc1.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.mlp.fc2.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.mlp.fc2.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.6.ls2.gamma: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.norm1.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.norm1.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.attn.qkv.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.attn.qkv.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.attn.proj.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.attn.proj.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.ls1.gamma: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.norm2.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.norm2.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.mlp.fc1.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.mlp.fc1.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.mlp.fc2.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.mlp.fc2.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.7.ls2.gamma: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.norm1.weight: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.norm1.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.attn.qkv.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.attn.qkv.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.attn.proj.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.attn.proj.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.ls1.gamma: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.norm2.weight: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.norm2.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.mlp.fc1.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.mlp.fc1.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.mlp.fc2.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.mlp.fc2.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.2.8.ls2.gamma: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.norm1.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.norm1.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.attn.qkv.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.attn.qkv.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.attn.proj.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.attn.proj.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.ls1.gamma: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.norm2.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.norm2.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.mlp.fc1.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.mlp.fc1.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.mlp.fc2.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.mlp.fc2.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.9.ls2.gamma: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.norm1.weight: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.norm1.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.attn.qkv.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.attn.qkv.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.attn.proj.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.attn.proj.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.ls1.gamma: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.norm2.weight: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.norm2.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.mlp.fc1.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.mlp.fc1.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.mlp.fc2.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.mlp.fc2.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.10.ls2.gamma: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.norm1.weight: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.norm1.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.attn.qkv.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.attn.qkv.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.attn.proj.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.attn.proj.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.ls1.gamma: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.norm2.weight: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.norm2.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.mlp.fc1.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.mlp.fc1.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.mlp.fc2.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.mlp.fc2.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] blocks.3.11.ls2.gamma: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] norm.weight: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] norm.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:444] fusing param groups
+I20250703 18:50:16 2658142 dinov2 param_groups.py:64] else code branch
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.0.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.0.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.2.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.2.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.4.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] mlp.4.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] last_layer.weight_g: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 param_groups.py:87] last_layer.weight_v: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:50:16 2658142 dinov2 ssl_meta_arch.py:444] fusing param groups
+I20250703 18:50:16 2658142 dinov2 train.py:101] Schedulers ready.
+I20250703 18:50:16 2658142 fvcore.common.checkpoint checkpoint.py:148] No checkpoint found. Initializing model from scratch
+I20250703 18:50:16 2658142 dinov2 augmentations.py:34] ###################################
+I20250703 18:50:16 2658142 dinov2 augmentations.py:35] Using data augmentation parameters:
+I20250703 18:50:16 2658142 dinov2 augmentations.py:36] global_crops_scale: [0.32, 1.0]
+I20250703 18:50:16 2658142 dinov2 augmentations.py:37] local_crops_scale: [0.05, 0.32]
+I20250703 18:50:16 2658142 dinov2 augmentations.py:38] local_crops_number: 8
+I20250703 18:50:16 2658142 dinov2 augmentations.py:39] global_crops_size: 224
+I20250703 18:50:16 2658142 dinov2 augmentations.py:40] local_crops_size: 96
+I20250703 18:50:16 2658142 dinov2 augmentations.py:41] ###################################
+I20250703 18:52:41 2659921 dinov2 config.py:59] git:
+  sha: 0265aa8df2dbee9e204eac390544b271af489005, status: has uncommitted changes, branch: main
+
+I20250703 18:52:41 2659921 dinov2 config.py:60] config_file: /raid/home/guevel/OT4D/dinov2/tests/train/config.yaml
+opts: ['train.output_dir=/raid/home/guevel/OT4D/dinov2/tests/train/logs']
+output_dir: /raid/home/guevel/OT4D/dinov2/tests/train/logs
+I20250703 18:52:41 2659921 dinov2 config.py:26] sqrt scaling learning rate; base: 0.004, new: 0.0007071067811865476
+I20250703 18:52:41 2659921 dinov2 config.py:33] MODEL:
+  WEIGHTS: ''
+compute_precision:
+  grad_scaler: true
+  teacher:
+    backbone:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    dino_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    ibot_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+  student:
+    backbone:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp16
+        buffer_dtype: fp32
+    dino_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp32
+        buffer_dtype: fp32
+    ibot_head:
+      sharding_strategy: SHARD_GRAD_OP
+      mixed_precision:
+        param_dtype: fp16
+        reduce_dtype: fp32
+        buffer_dtype: fp32
+dino:
+  loss_weight: 1.0
+  head_n_prototypes: 65536
+  head_bottleneck_dim: 256
+  head_nlayers: 3
+  head_hidden_dim: 2048
+  koleo_loss_weight: 0.1
+ibot:
+  loss_weight: 1.0
+  mask_sample_probability: 0.5
+  mask_ratio_min_max:
+  - 0.1
+  - 0.5
+  separate_head: false
+  head_n_prototypes: 65536
+  head_bottleneck_dim: 256
+  head_nlayers: 3
+  head_hidden_dim: 2048
+daino:
+  loss_weight: 0.0
+  labelled_batch_size_per_gpu: 8
+  labelled_dataset_path: null
+train:
+  batch_size_per_gpu: 32
+  dataset_path: null
+  path_preserved: null
+  frac: 1
+  output_dir: /raid/home/guevel/OT4D/dinov2/tests/train/logs
+  saveckp_freq: 20
+  seed: 0
+  num_workers: 4
+  OFFICIAL_EPOCH_LENGTH: 1
+  cache_dataset: true
+  centering: centering
+student:
+  arch: vit_small
+  patch_size: 16
+  drop_path_rate: 0.3
+  layerscale: 1.0e-05
+  drop_path_uniform: true
+  pretrained_weights: ''
+  ffn_layer: mlp
+  block_chunks: 4
+  qkv_bias: true
+  proj_bias: true
+  ffn_bias: true
+  num_register_tokens: 0
+  interpolate_antialias: false
+  interpolate_offset: 0.1
+teacher:
+  momentum_teacher: 0.992
+  final_momentum_teacher: 1
+  warmup_teacher_temp: 0.04
+  teacher_temp: 0.07
+  warmup_teacher_temp_epochs: 30
+optim:
+  epochs: 100
+  weight_decay: 0.04
+  weight_decay_end: 0.4
+  base_lr: 0.004
+  lr: 0.0007071067811865476
+  warmup_epochs: 10
+  min_lr: 1.0e-06
+  clip_grad: 3.0
+  freeze_last_layer_epochs: 1
+  scaling_rule: sqrt_wrt_1024
+  patch_embed_lr_mult: 0.2
+  layerwise_decay: 0.9
+  adamw_beta1: 0.9
+  adamw_beta2: 0.999
+crops:
+  global_crops_scale:
+  - 0.32
+  - 1.0
+  local_crops_number: 8
+  local_crops_scale:
+  - 0.05
+  - 0.32
+  global_crops_size: 224
+  local_crops_size: 96
+evaluation:
+  eval_period_iterations: 12500
+
+I20250703 18:52:41 2659921 dinov2 vision_transformer.py:122] using MLP layer as FFN
+I20250703 18:52:41 2659921 dinov2 vision_transformer.py:122] using MLP layer as FFN
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:48] OPTIONS -- architecture : embed_dim: 384
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:71] OPTIONS -- DINO
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:73] OPTIONS -- DINO -- loss_weight: 1.0
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:74] OPTIONS -- DINO -- head_n_prototypes: 65536
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:75] OPTIONS -- DINO -- head_bottleneck_dim: 256
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:76] OPTIONS -- DINO -- head_hidden_dim: 2048
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:88] OPTIONS -- DINO -- applying KOLEO regularization
+W20250703 18:52:41 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/nn/utils/weight_norm.py:143: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:98] OPTIONS -- IBOT
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:99] OPTIONS -- IBOT -- loss_weight: 1.0
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:100] OPTIONS -- IBOT masking -- ibot_mask_ratio_tuple: [0.1, 0.5]
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:101] OPTIONS -- IBOT masking -- ibot_mask_sample_probability: 0.5
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:124] OPTIONS -- IBOT -- head shared with DINO
+I20250703 18:52:41 2659921 dinov2 ssl_meta_arch.py:134] Student and Teacher are built: they are both vit_small network.
+I20250703 18:52:42 2659921 dinov2 ssl_meta_arch.py:457] DISTRIBUTED FSDP -- preparing model for distributed training
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py:430: UserWarning: FSDP is switching to use `NO_SHARD` instead of ShardingStrategy.SHARD_GRAD_OP since the world size is 1.
+  warnings.warn(
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x Identity()
+  (3-5): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-5): 6 x Identity()
+  (6-8): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-8): 9 x Identity()
+  (9-11): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): DropPath()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): DropPath()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-2): 3 x Identity()
+  (3-5): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-5): 6 x Identity()
+  (6-8): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+W20250703 18:52:42 2659921 py.warnings warnings.py:109] /raid/home/guevel/OT4D/dinov2/.venv/lib/python3.10/site-packages/torch/distributed/fsdp/wrap.py:88: UserWarning: FSDP will not all-gather parameters for containers that do not implement forward: BlockChunk(
+  (0-8): 9 x Identity()
+  (9-11): 3 x NestedTensorBlock(
+    (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (attn): MemEffAttention(
+      (qkv): Linear(in_features=384, out_features=1152, bias=True)
+      (attn_drop): Dropout(p=0.0, inplace=False)
+      (proj): Linear(in_features=384, out_features=384, bias=True)
+      (proj_drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls1): LayerScale()
+    (drop_path1): Identity()
+    (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (mlp): Mlp(
+      (fc1): Linear(in_features=384, out_features=1536, bias=True)
+      (act): GELU(approximate='none')
+      (fc2): Linear(in_features=1536, out_features=384, bias=True)
+      (drop): Dropout(p=0.0, inplace=False)
+    )
+    (ls2): LayerScale()
+    (drop_path2): Identity()
+  )
+)
+  return fsdp_fn(module, **kwargs)
+
+I20250703 18:52:42 2659921 dinov2 test_train.py:41] Model:
+ SSLMetaArch(
+  (dino_loss): DINOLoss()
+  (koleo_loss): KoLeoLoss(
+    (pdist): PairwiseDistance()
+  )
+  (ibot_patch_loss): iBOTPatchLoss()
+  (student): ModuleDict(
+    (backbone): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DinoVisionTransformer(
+        (patch_embed): PatchEmbed(
+          (proj): Conv2d(3, 384, kernel_size=(16, 16), stride=(16, 16))
+          (norm): Identity()
+        )
+        (blocks): ModuleList(
+          (0): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (1): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x Identity()
+              (3-5): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (2): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-5): 6 x Identity()
+              (6-8): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+          (3): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-8): 9 x Identity()
+              (9-11): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): DropPath()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): DropPath()
+              )
+            )
+          )
+        )
+        (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (head): Identity()
+      )
+    )
+    (dino_head): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DINOHead(
+        (mlp): Sequential(
+          (0): Linear(in_features=384, out_features=2048, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=2048, out_features=2048, bias=True)
+          (3): GELU(approximate='none')
+          (4): Linear(in_features=2048, out_features=256, bias=True)
+        )
+        (last_layer): Linear(in_features=256, out_features=65536, bias=False)
+      )
+    )
+  )
+  (teacher): ModuleDict(
+    (backbone): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DinoVisionTransformer(
+        (patch_embed): PatchEmbed(
+          (proj): Conv2d(3, 384, kernel_size=(16, 16), stride=(16, 16))
+          (norm): Identity()
+        )
+        (blocks): ModuleList(
+          (0): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (1): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-2): 3 x Identity()
+              (3-5): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (2): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-5): 6 x Identity()
+              (6-8): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+          (3): FullyShardedDataParallel(
+            (_fsdp_wrapped_module): BlockChunk(
+              (0-8): 9 x Identity()
+              (9-11): 3 x NestedTensorBlock(
+                (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (attn): MemEffAttention(
+                  (qkv): Linear(in_features=384, out_features=1152, bias=True)
+                  (attn_drop): Dropout(p=0.0, inplace=False)
+                  (proj): Linear(in_features=384, out_features=384, bias=True)
+                  (proj_drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls1): LayerScale()
+                (drop_path1): Identity()
+                (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+                (mlp): Mlp(
+                  (fc1): Linear(in_features=384, out_features=1536, bias=True)
+                  (act): GELU(approximate='none')
+                  (fc2): Linear(in_features=1536, out_features=384, bias=True)
+                  (drop): Dropout(p=0.0, inplace=False)
+                )
+                (ls2): LayerScale()
+                (drop_path2): Identity()
+              )
+            )
+          )
+        )
+        (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (head): Identity()
+      )
+    )
+    (dino_head): FullyShardedDataParallel(
+      (_fsdp_wrapped_module): DINOHead(
+        (mlp): Sequential(
+          (0): Linear(in_features=384, out_features=2048, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=2048, out_features=2048, bias=True)
+          (3): GELU(approximate='none')
+          (4): Linear(in_features=2048, out_features=256, bias=True)
+        )
+        (last_layer): Linear(in_features=256, out_features=65536, bias=False)
+      )
+    )
+  )
+)
+I20250703 18:52:42 2659921 dinov2 param_groups.py:54] chunked fsdp
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] cls_token: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] pos_embed: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mask_token: lr_multiplier: 0.2541865828329001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] patch_embed.proj.weight: lr_multiplier: 0.05083731656658002, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] patch_embed.proj.bias: lr_multiplier: 0.05083731656658002, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.norm1.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.norm1.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.attn.qkv.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.attn.qkv.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.attn.proj.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.attn.proj.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.ls1.gamma: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.norm2.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.norm2.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.mlp.fc1.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.mlp.fc1.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.mlp.fc2.weight: lr_multiplier: 0.2824295364810001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.mlp.fc2.bias: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.0.ls2.gamma: lr_multiplier: 0.2824295364810001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.norm1.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.norm1.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.attn.qkv.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.attn.qkv.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.attn.proj.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.attn.proj.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.ls1.gamma: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.norm2.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.norm2.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.mlp.fc1.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.mlp.fc1.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.mlp.fc2.weight: lr_multiplier: 0.31381059609000006, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.mlp.fc2.bias: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.1.ls2.gamma: lr_multiplier: 0.31381059609000006, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.norm1.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.norm1.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.attn.qkv.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.attn.qkv.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.attn.proj.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.attn.proj.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.ls1.gamma: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.norm2.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.norm2.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.mlp.fc1.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.mlp.fc1.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.mlp.fc2.weight: lr_multiplier: 0.3486784401000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.mlp.fc2.bias: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.0.2.ls2.gamma: lr_multiplier: 0.3486784401000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.norm1.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.norm1.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.attn.qkv.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.attn.qkv.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.attn.proj.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.attn.proj.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.ls1.gamma: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.norm2.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.norm2.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.mlp.fc1.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.mlp.fc1.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.mlp.fc2.weight: lr_multiplier: 0.3874204890000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.mlp.fc2.bias: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.3.ls2.gamma: lr_multiplier: 0.3874204890000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.norm1.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.norm1.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.attn.qkv.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.attn.qkv.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.attn.proj.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.attn.proj.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.ls1.gamma: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.norm2.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.norm2.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.mlp.fc1.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.mlp.fc1.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.mlp.fc2.weight: lr_multiplier: 0.4304672100000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.mlp.fc2.bias: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.4.ls2.gamma: lr_multiplier: 0.4304672100000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.norm1.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.norm1.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.attn.qkv.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.attn.qkv.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.attn.proj.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.attn.proj.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.ls1.gamma: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.norm2.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.norm2.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.mlp.fc1.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.mlp.fc1.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.mlp.fc2.weight: lr_multiplier: 0.4782969000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.mlp.fc2.bias: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.1.5.ls2.gamma: lr_multiplier: 0.4782969000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.norm1.weight: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.norm1.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.attn.qkv.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.attn.qkv.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.attn.proj.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.attn.proj.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.ls1.gamma: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.norm2.weight: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.norm2.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.mlp.fc1.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.mlp.fc1.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.mlp.fc2.weight: lr_multiplier: 0.531441, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.mlp.fc2.bias: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.6.ls2.gamma: lr_multiplier: 0.531441, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.norm1.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.norm1.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.attn.qkv.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.attn.qkv.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.attn.proj.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.attn.proj.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.ls1.gamma: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.norm2.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.norm2.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.mlp.fc1.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.mlp.fc1.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.mlp.fc2.weight: lr_multiplier: 0.5904900000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.mlp.fc2.bias: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.7.ls2.gamma: lr_multiplier: 0.5904900000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.norm1.weight: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.norm1.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.attn.qkv.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.attn.qkv.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.attn.proj.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.attn.proj.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.ls1.gamma: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.norm2.weight: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.norm2.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.mlp.fc1.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.mlp.fc1.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.mlp.fc2.weight: lr_multiplier: 0.6561, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.mlp.fc2.bias: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.2.8.ls2.gamma: lr_multiplier: 0.6561, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.norm1.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.norm1.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.attn.qkv.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.attn.qkv.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.attn.proj.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.attn.proj.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.ls1.gamma: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.norm2.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.norm2.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.mlp.fc1.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.mlp.fc1.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.mlp.fc2.weight: lr_multiplier: 0.7290000000000001, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.mlp.fc2.bias: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.9.ls2.gamma: lr_multiplier: 0.7290000000000001, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.norm1.weight: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.norm1.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.attn.qkv.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.attn.qkv.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.attn.proj.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.attn.proj.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.ls1.gamma: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.norm2.weight: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.norm2.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.mlp.fc1.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.mlp.fc1.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.mlp.fc2.weight: lr_multiplier: 0.81, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.mlp.fc2.bias: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.10.ls2.gamma: lr_multiplier: 0.81, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.norm1.weight: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.norm1.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.attn.qkv.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.attn.qkv.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.attn.proj.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.attn.proj.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.ls1.gamma: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.norm2.weight: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.norm2.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.mlp.fc1.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.mlp.fc1.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.mlp.fc2.weight: lr_multiplier: 0.9, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.mlp.fc2.bias: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] blocks.3.11.ls2.gamma: lr_multiplier: 0.9, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] norm.weight: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] norm.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 ssl_meta_arch.py:444] fusing param groups
+I20250703 18:52:42 2659921 dinov2 param_groups.py:64] else code branch
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.0.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.0.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.2.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.2.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.4.weight: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] mlp.4.bias: lr_multiplier: 1.0, wd_multiplier: 0.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] last_layer.weight_g: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 param_groups.py:87] last_layer.weight_v: lr_multiplier: 1.0, wd_multiplier: 1.0
+I20250703 18:52:42 2659921 dinov2 ssl_meta_arch.py:444] fusing param groups
+I20250703 18:52:42 2659921 dinov2 train.py:101] Schedulers ready.
+I20250703 18:52:42 2659921 fvcore.common.checkpoint checkpoint.py:148] No checkpoint found. Initializing model from scratch
+I20250703 18:52:42 2659921 dinov2 augmentations.py:34] ###################################
+I20250703 18:52:42 2659921 dinov2 augmentations.py:35] Using data augmentation parameters:
+I20250703 18:52:42 2659921 dinov2 augmentations.py:36] global_crops_scale: [0.32, 1.0]
+I20250703 18:52:42 2659921 dinov2 augmentations.py:37] local_crops_scale: [0.05, 0.32]
+I20250703 18:52:42 2659921 dinov2 augmentations.py:38] local_crops_number: 8
+I20250703 18:52:42 2659921 dinov2 augmentations.py:39] global_crops_size: 224
+I20250703 18:52:42 2659921 dinov2 augmentations.py:40] local_crops_size: 96
+I20250703 18:52:42 2659921 dinov2 augmentations.py:41] ###################################
+I20250703 18:52:42 2659921 dinov2 loaders.py:166] sampler: sharded infinite
+I20250703 18:52:42 2659921 dinov2 loaders.py:250] using PyTorch data loader
+I20250703 18:52:42 2659921 dinov2 loaders.py:265] infinite data loader
+I20250703 18:52:42 2659921 dinov2 train.py:244] Starting training from iteration 0

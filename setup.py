@@ -64,7 +64,7 @@ def check_nvidia_smi():
 
 
 if check_nvidia_smi():
-    requirements, extra_indices = get_requirements(path=HERE / "requirements_cuda.txt")
+    requirements, extra_indices = get_requirements(path=HERE / "requirements-cuda.txt")
 
 
 else:
