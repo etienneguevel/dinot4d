@@ -11,10 +11,11 @@ from dinov2.train.train import do_train
 
 logger = logging.getLogger("dinov2")
 
+
 def test_one_epoch():
     if torch.cuda.is_available():
         cfg = OmegaConf.load(Path(__file__).parent / "config.yaml")
-        
+
         # Setup the correct paths for data loading and output
         dataset_path = Path(__file__).parent.parent / "data" / "dataset1"
         output_path = Path(__file__).parent / "logs"

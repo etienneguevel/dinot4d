@@ -52,12 +52,7 @@ class ImageDataset(Dataset):
                 preserve = p in self.path_preserved
                 try:
                     images.extend(
-                        self._retrieve_from_path(
-                            p,
-                            preserve=preserve,
-                            frac=self.frac,
-                            is_valid=self.is_valid
-                        )
+                        self._retrieve_from_path(p, preserve=preserve, frac=self.frac, is_valid=self.is_valid)
                     )
                 except OSError:
                     print(f"the path indicated at {p} cannot be found.")

@@ -23,7 +23,7 @@ def test_pretrained_loading():
     if os.path.exists(cfg.student.pretrained_weights):
         model = SSLMetaArch(cfg)
         logger.info("Model: \n{}".format(model))
-    
+
     else:
         warning_msg = "Path to the pretrained weights non-existent, test skipped."
         logger.warning(warning_msg)
