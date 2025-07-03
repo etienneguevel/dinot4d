@@ -16,7 +16,7 @@ DESCRIPTION = "PyTorch code and models for the DINOv2 self-supervised learning m
 
 URL = "https://github.com/facebookresearch/dinov2"
 AUTHOR = "FAIR"
-REQUIRES_PYTHON = ">=3.9.0"
+REQUIRES_PYTHON = ">=3.10.0"
 HERE = Path(__file__).parent
 
 
@@ -66,12 +66,12 @@ def check_nvidia_smi():
 if check_nvidia_smi():
     requirements, extra_indices = get_requirements(path=HERE / "requirements_cuda.txt")
 
+
 else:
     requirements, extra_indices = get_requirements()
 
 version = get_package_version()
 dev_requirements, _ = get_requirements(HERE / "requirements-dev.txt")
-extras_requirements, _ = get_requirements(HERE / "requirements-extras.txt")
 
 
 setup(
@@ -90,20 +90,7 @@ setup(
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
-        "extras": extras_requirements,
     },
     dependency_links=extra_indices,
     install_package_data=True,
-    license="Apache",
-    license_files=("LICENSE",),
-    classifiers=[
-        # Trove classifiers: https://github.com/pypa/trove-classifiers/blob/main/src/trove_classifiers/__init__.py
-        "Development Status :: 3 - Alpha",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.9",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-    ],
 )
