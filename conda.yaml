@@ -1,4 +1,4 @@
-name: cell_sim
+name: cell_sim_bis
 channels:
   - pytorch
   - nvidia
@@ -14,7 +14,4 @@ dependencies:
   - iopath
   - pip
   - pip:
-      - --index-url https://download.pytorch.org/whl/cu118
-      - torch==2.3.0+cu118
-      - torchvision
-      - xformers>=0.0.18
+    - -r requirements-cuda.txt
