@@ -9,10 +9,32 @@ Developping a foundation model for blood white cells is interesting for several 
 
 ## Installing
 
-To install the project and the required packages that are necessary for this project use `conda env create -f conda.yaml`,
-then `conda activate cell_sim` and `pip install -e .`.
+You should check that your original python has development headers, if not you
+can install it with:
 
-The dinov2 packages is then available from the conda env cell_sim for execution.
+- `sudo apt install python3-dev`
+- Installing directly from the `conda.yaml` file with `conda env create -f conda.yaml`
+
+Then install the library package with `pip install -e .`
+
+> Please be aware that the version of torch and similar libraries might need extra
+index depending of your nvidia drivers,
+reinstall those packages if needed.
+
+## Contributing
+
+**/!\ Please read those instructions if you want to contribute /!\\**
+
+To contribute to the package, first install the required libraries with
+`pip install -r requirements-dev.txt`.
+
+Then setup pre-commit by running within your terminal `pre-commit install`. This
+will make pre-commit auto launch after each of your commits. If you want to check
+before commiting if your file are correctly formatted run `pre-commit run --all-files`.
+
+When pushing, the submitted repo will pass through github actions checking style,
+installation and tests. Do not make a Pull request before being sure that these
+hooks are validated !
 
 ## Data
 
