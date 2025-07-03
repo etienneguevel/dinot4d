@@ -16,7 +16,7 @@ DESCRIPTION = "PyTorch code and models for the DINOv2 self-supervised learning m
 
 URL = "https://github.com/facebookresearch/dinov2"
 AUTHOR = "FAIR"
-REQUIRES_PYTHON = ">=3.9.0"
+REQUIRES_PYTHON = ">=3.10.0"
 HERE = Path(__file__).parent
 
 
@@ -64,7 +64,7 @@ def check_nvidia_smi():
 
 
 if check_nvidia_smi():
-    requirements, extra_indices = get_requirements(path=HERE / "requirements_cuda.txt")
+    requirements, extra_indices = get_requirements(path=HERE / "requirements-cuda.txt")
 
 else:
     requirements, extra_indices = get_requirements()
