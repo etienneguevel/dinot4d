@@ -9,6 +9,10 @@ import math
 import os
 from functools import partial
 
+import json
+from omegaconf import DictConfig
+from torch.nn import Module
+
 import torch
 from fvcore.common.checkpoint import PeriodicCheckpointer
 
@@ -20,6 +24,10 @@ from dinov2.logging import MetricLogger
 from dinov2.utils.config import setup
 from dinov2.utils.utils import CosineScheduler, write_list
 from dinov2.train.ssl_meta_arch import SSLMetaArch
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.neighbors import KNeighborsClassifier
 
 
 torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
@@ -118,16 +126,116 @@ def apply_optim_scheduler(optimizer, lr, wd, last_layer_lr):
         param_group["lr"] = (last_layer_lr if is_last_layer else lr) * lr_multiplier
 
 
-def do_test(cfg, model, iteration):
+def calculate_embedding(dataloader, model, device):
+    embeddings = []
+    label_list = []
+
+    model.eval()
+    model.to(device)
+
+    for images, labels in dataloader:
+
+        images = images.to(device)
+        # Passage dans le modèle
+        with torch.no_grad():
+            output = model(images)
+
+        embeddings.append(output.cpu())
+        label_list.append(labels.cpu())
+
+        del images, output
+        torch.cuda.empty_cache()
+
+    return torch.cat(embeddings, dim=0).numpy(), torch.cat(label_list, dim=0).numpy()
+
+
+def k_nearest_neighbor_eval(
+    train_array,
+    train_labels,
+    test_array,
+    test_labels,
+    target_names,
+    k,
+):
+    # Initialize the classifier
+    cls = KNeighborsClassifier(n_neighbors=k)
+
+    # Fit the model
+    cls.fit(train_array, train_labels)
+
+    # Make the predictions
+    preds = cls.predict(test_array)
+    report = classification_report(test_labels, preds, target_names=target_names, output_dict=True, zero_division=0)
+
+    return report
+
+
+def linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names):
+    # Initialize the classifier
+    cls = LogisticRegression()
+
+    # Fit the model
+    cls.fit(train_array, train_labels)
+
+    # Make the predictions
+    preds = cls.predict(test_array)
+    report = classification_report(test_labels, preds, target_names=target_names, output_dict=True, zero_division=0)
+
+    return report
+
+
+def do_test(
+    cfg: DictConfig,
+    model: Module,
+    iteration: int,
+    dataloader_fit: torch.utils.data.DataLoader,
+    dataloader_eval: torch.utils.data.DataLoader,
+    device: torch.device,
+    all_dict: dict[str, dict[str, dict[str, dict[str, float]]]],
+    target_names: list,
+) -> dict[str, dict[str, dict[str, dict[str, float]]]]:
+
+    # Compute the embeddings
+    train_array, train_labels = calculate_embedding(
+        dataloader=dataloader_fit, model=model.teacher.backbone, device=device
+    )
+    test_array, test_labels = calculate_embedding(
+        dataloader=dataloader_eval, model=model.teacher.backbone, device=device
+    )
+
+    # Eval on 1-NN
+    report_1NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=1)
+
+    # Eval on 20-NN
+    report_20NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=20)
+
+    # Eval on linear probing
+    report_linear = linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names)
+
+    # Append the results to the dataset
+    all_dict[str(iteration)] = {
+        "1-NN": report_1NN,
+        "20-NN": report_20NN,
+        "linear probing": report_linear,
+    }
+
+    # Save the results
+    eval_path = os.path.join(cfg.train.output_dir, "eval_metrics.json")
+    with open(eval_path, "w") as f:
+        json.dump(all_dict, f, indent=4)
+
+    # Save the teacher at eval iteration
     new_state_dict = model.teacher.state_dict()
 
     if distributed.is_main_process():
-        iterstring = str(iteration)
+        iterstring = f"training_{iteration}"
         eval_dir = os.path.join(cfg.train.output_dir, "eval", iterstring)
         os.makedirs(eval_dir, exist_ok=True)
         # save teacher checkpoint
         teacher_ckp_path = os.path.join(eval_dir, "teacher_checkpoint.pth")
         torch.save({"teacher": new_state_dict}, teacher_ckp_path)
+
+    return all_dict
 
 
 def do_train(cfg, model, resume=False):
@@ -200,6 +308,11 @@ def do_train(cfg, model, resume=False):
         )
         print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
+    if cfg.evaluation.eval_period_iterations > 0:
+        dataset_fit = make_labelled_dataset(cfg.evaluation.fit_dataset_path)
+        dataset_eval = make_labelled_dataset(cfg.evaluation.eval_dataset_path)
+        target_names = list(dataset_fit.translate_dict.keys())  # for the classification report
+
     # Save the preserved images, if necessary
     if dataset.preserved_images:
         write_list(
@@ -232,6 +345,35 @@ def do_train(cfg, model, resume=False):
             drop_last=True,
         )
         labelled_iterator = iter(labelled_dataloader)
+
+    # Setup the eval data loader
+    if cfg.evaluation.eval_period_iterations > 0:
+        data_loader_fit = make_data_loader(
+            dataset=dataset_fit,
+            batch_size=cfg.train.batch_size_per_gpu,
+            num_workers=cfg.train.num_workers,
+            shuffle=True,
+            seed=0,  # TODO: Fix this -- cfg.train.seed
+            sampler_type=None,
+            sampler_advance=0,  # TODO(qas): fix this -- start_iter * cfg.train.batch_size_per_gpu,
+            drop_last=True,
+            collate_fn=None,
+        )
+
+        data_loader_eval = make_data_loader(
+            dataset=dataset_eval,
+            batch_size=cfg.train.batch_size_per_gpu,
+            num_workers=cfg.train.num_workers,
+            shuffle=True,
+            seed=0,  # TODO: Fix this -- cfg.train.seed
+            sampler_type=None,
+            sampler_advance=0,  # TODO(qas): fix this -- start_iter * cfg.train.batch_size_per_gpu,
+            drop_last=True,
+            collate_fn=None,
+        )
+
+        # Dictionary of the eval metrics
+        all_eval_metrics = {}
 
     # A bit of verbose for information sake
     print("There are {} images in the unlabelled dataset used".format(len(dataset)))
@@ -313,8 +455,19 @@ def do_train(cfg, model, resume=False):
         metric_logger.update(memory=torch.cuda.max_memory_allocated() / 1024**2)
 
         # Checkpointing and testing
-        if cfg.evaluation.eval_period_iterations > 0 and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0:
-            do_test(cfg, model, f"training_{iteration}")
+        if cfg.evaluation.eval_period_iterations > 0 and (
+            (iteration + 1) % cfg.evaluation.eval_period_iterations == 0 or iteration == 0
+        ):
+            all_eval_metrics = do_test(
+                cfg,
+                model,
+                iteration,
+                data_loader_fit,
+                data_loader_eval,
+                torch.device("cuda"),
+                all_eval_metrics,
+                target_names,
+            )
             torch.cuda.synchronize()
         periodic_checkpointer.step(iteration)
 
