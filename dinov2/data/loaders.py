@@ -9,6 +9,7 @@ from typing import Any, Callable, List, Optional, TypeVar, Union
 
 import torch
 from torch.utils.data import Sampler
+from torchvision import transforms
 
 from .datasets import ImageNet, ImageNet22k, ImageDataset, LabelledDataset
 from .samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
@@ -103,6 +104,31 @@ def make_labelled_dataset(
         The created dataset.
     """
     transform = make_classification_train_transform()
+    dataset = LabelledDataset(data_path=labelled_dataset_path, root=dataset_path, transform=transform)
+
+    return dataset
+
+
+def make_eval_dataset(
+    labelled_dataset_path: str,
+    resize: int,
+    dataset_path: Optional[str] = None,
+):
+    """
+    Creates a labelled dataset for the evaluation with the specified parameters.
+    Args:
+        labelled_dataset_path: A path to the file containing the labels of images, of a folder with folders named after the label containing images.
+        resize: size of the output images of the dataset
+        dataset_path: Change the folder where to fetch the image name.
+    Returns:
+        The created dataset.
+    """
+    transform = transforms.Compose(
+        [
+            transforms.Resize((resize, resize)),
+            transforms.ToTensor(),
+        ]
+    )
     dataset = LabelledDataset(data_path=labelled_dataset_path, root=dataset_path, transform=transform)
 
     return dataset

@@ -19,7 +19,7 @@ import torch
 from fvcore.common.checkpoint import PeriodicCheckpointer
 
 import dinov2.distributed as distributed
-from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset
+from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset, make_eval_dataset
 from dinov2.data import collate_data_and_cast, DataAugmentationDINO, MaskingGenerator
 from dinov2.fsdp import FSDPCheckpointer
 from dinov2.logging import MetricLogger
@@ -366,8 +366,8 @@ def do_train(cfg, model, resume=False):
         print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
     if cfg.evaluation.eval_period_iterations > 0:
-        dataset_fit = make_labelled_dataset(cfg.evaluation.fit_dataset_path)
-        dataset_eval = make_labelled_dataset(cfg.evaluation.eval_dataset_path)
+        dataset_fit = make_eval_dataset(cfg.evaluation.fit_dataset_path, img_size)
+        dataset_eval = make_eval_dataset(cfg.evaluation.eval_dataset_path, img_size)
         target_names = list(dataset_fit.translate_dict.keys())  # for the classification report
 
     # Save the preserved images, if necessary
