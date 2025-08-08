@@ -8,6 +8,8 @@ import logging
 import math
 import os
 from functools import partial
+import numpy as np
+from typing import Tuple
 
 import json
 from omegaconf import DictConfig
@@ -126,7 +128,19 @@ def apply_optim_scheduler(optimizer, lr, wd, last_layer_lr):
         param_group["lr"] = (last_layer_lr if is_last_layer else lr) * lr_multiplier
 
 
-def calculate_embedding(dataloader, model, device):
+def calculate_embedding(
+    dataloader: torch.utils.data.DataLoader, model: Module, device: torch.device
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Computes feature embeddings for all images in a dataloader using the given model.
+    Args:
+        dataloader: torch.utils.data.DataLoader, A PyTorch dataloader yielding (image, label) batches.
+        model: Module, The model used to extract embeddings.
+        device: torch.device, The device on which to run the model ("cuda" or "cpu").
+    Returns:
+        embeddings: np.ndarray, The concatenated embeddings of all images, shape (N, D).
+        labels: np.ndarray, The concatenated labels for all images, shape (N,).
+    """
     embeddings = []
     label_list = []
 
@@ -150,13 +164,25 @@ def calculate_embedding(dataloader, model, device):
 
 
 def k_nearest_neighbor_eval(
-    train_array,
-    train_labels,
-    test_array,
-    test_labels,
-    target_names,
-    k,
-):
+    train_array: np.ndarray,
+    train_labels: np.ndarray,
+    test_array: np.ndarray,
+    test_labels: np.ndarray,
+    target_names: list,
+    k: int,
+) -> dict:
+    """
+    Evaluates a k-Nearest Neighbors (k-NN) classifier on precomputed image embeddings.
+    Args:
+        train_array: np.ndarray, Embeddings for the training images.
+        train_labels: np.ndarray, Corresponding labels for the training images.
+        test_array: np.ndarray, Embeddings for the test images.
+        test_labels: np.ndarray, Corresponding labels for the test images.
+        target_names: list, List of class names for report formatting.
+        k: int, Number of neighbors to use for KNN.
+    Returns:
+        report: dict, A classification report with precision, recall, and F1-score for each class.
+    """
     # Initialize the classifier
     cls = KNeighborsClassifier(n_neighbors=k)
 
@@ -170,7 +196,24 @@ def k_nearest_neighbor_eval(
     return report
 
 
-def linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names):
+def linear_probing_eval(
+    train_array: np.ndarray,
+    train_labels: np.ndarray,
+    test_array: np.ndarray,
+    test_labels: np.ndarray,
+    target_names: list,
+) -> dict:
+    """
+    Evaluates a logistic regression classifier (linear probing) on image embeddings.
+    Args:
+        train_array: np.ndarray, Embeddings for the training images.
+        train_labels: np.ndarray, Corresponding labels for the training images.
+        test_array: np.ndarray, Embeddings for the test images.
+        test_labels: np.ndarray, Corresponding labels for the test images.
+        target_names: lsit, List of class names for report formatting.
+    Returns:
+        report: dict, A classification report with precision, recall, and F1-score for each class.
+    """
     # Initialize the classifier
     cls = LogisticRegression()
 
@@ -194,6 +237,20 @@ def do_test(
     all_dict: dict[str, dict[str, dict[str, dict[str, float]]]],
     target_names: list,
 ) -> dict[str, dict[str, dict[str, dict[str, float]]]]:
+    """
+    Performs model evaluation using 1-NN, 20-NN, and linear probing on the given dataloaders. Saves evaluation metrics and a checkpoint of the teacher model at the current training iteration.
+    Args:
+        cfg: DictConfig, Hydra config object containing training options and output paths.
+        model: Module, The model at the current iteration.
+        iteration: int, Training iteration number at which evaluation is performed.
+        dataloader_fit: torch.utils.data.DataLoader, Dataloader for the training split (for embedding extraction).
+        dataloader_eval: torch.utils.data.DataLoader, Dataloader for the evaluation split.
+        device: torch.device, Device used for inference.
+        all_dict: dict, Nested dictionary storing previous evaluation metrics, updated in-place.
+        target_names: list, Names of the target classes.
+    Returns:
+        all_dict: dict, The updated dictionary containing metrics for this iteration, structured for saving to JSON.
+    """
 
     # Compute the embeddings
     train_array, train_labels = calculate_embedding(
