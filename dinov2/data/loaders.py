@@ -13,7 +13,7 @@ from torchvision import transforms
 
 from .datasets import ImageNet, ImageNet22k, ImageDataset, LabelledDataset
 from .samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
-from .transforms import make_classification_train_transform
+from .transforms import make_classification_train_transform, make_normalize_transform
 
 
 logger = logging.getLogger("dinov2")
@@ -124,10 +124,7 @@ def make_eval_dataset(
         The created dataset.
     """
     transform = transforms.Compose(
-        [
-            transforms.Resize((resize, resize)),
-            transforms.ToTensor(),
-        ]
+        [transforms.Resize((resize, resize)), transforms.ToTensor(), make_normalize_transform()]
     )
     dataset = LabelledDataset(data_path=labelled_dataset_path, root=dataset_path, transform=transform)
 
