@@ -9,7 +9,7 @@ import logging
 import math
 import os
 from functools import partial
-from typing import Tuple
+from typing import Tuple, NoReturn
 
 import numpy as np
 import torch
@@ -167,7 +167,7 @@ def k_nearest_neighbor_eval(
     test_labels: np.ndarray,
     target_names: list,
     k: int,
-) -> dict:
+) -> dict[str, dict[str, dict]]:
     """
     Evaluates a k-Nearest Neighbors (k-NN) classifier on precomputed image embeddings.
     Args:
@@ -199,7 +199,7 @@ def linear_probing_eval(
     test_array: np.ndarray,
     test_labels: np.ndarray,
     target_names: list,
-) -> dict:
+) -> dict[str, dict[str, dict]]:
     """
     Evaluates a logistic regression classifier (linear probing) on image embeddings.
     Args:
@@ -207,7 +207,7 @@ def linear_probing_eval(
         train_labels: np.ndarray, Corresponding labels for the training images.
         test_array: np.ndarray, Embeddings for the test images.
         test_labels: np.ndarray, Corresponding labels for the test images.
-        target_names: lsit, List of class names for report formatting.
+        target_names: list, List of class names for report formatting.
     Returns:
         report: dict, A classification report with precision, recall, and F1-score for each class.
     """
@@ -231,9 +231,9 @@ def do_test(
     dataloader_fit: torch.utils.data.DataLoader,
     dataloader_eval: torch.utils.data.DataLoader,
     device: torch.device,
-    all_dict: dict[str, dict[str, dict[str, dict[str, float]]]],
+    all_dict: dict[str, dict[str, dict]],
     target_names: list,
-) -> dict[str, dict[str, dict[str, dict[str, float]]]]:
+) -> NoReturn:
     """
     Performs model evaluation using 1-NN, 20-NN, and linear probing on the given dataloaders. Saves evaluation metrics and a checkpoint of the teacher model at the current training iteration.
     Args:
@@ -248,48 +248,46 @@ def do_test(
     Returns:
         all_dict: dict, The updated dictionary containing metrics for this iteration, structured for saving to JSON.
     """
-
-    # Compute the embeddings
-    train_array, train_labels = calculate_embedding(
-        dataloader=dataloader_fit, model=model.teacher.backbone, device=device
-    )
-    test_array, test_labels = calculate_embedding(
-        dataloader=dataloader_eval, model=model.teacher.backbone, device=device
-    )
-
-    # Eval on 1-NN
-    report_1NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=1)
-
-    # Eval on 20-NN
-    report_20NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=20)
-
-    # Eval on linear probing
-    report_linear = linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names)
-
-    # Append the results to the dataset
-    all_dict[str(iteration)] = {
-        "1-NN": report_1NN,
-        "20-NN": report_20NN,
-        "linear probing": report_linear,
-    }
-
-    # Save the results
-    eval_path = os.path.join(cfg.train.output_dir, "eval_metrics.json")
-    with open(eval_path, "w") as f:
-        json.dump(all_dict, f, indent=4)
-
-    # Save the teacher at eval iteration
-    new_state_dict = model.teacher.state_dict()
-
     if distributed.is_main_process():
+        # Compute the embeddings
+        train_array, train_labels = calculate_embedding(
+            dataloader=dataloader_fit, model=model.teacher.backbone, device=device
+        )
+        test_array, test_labels = calculate_embedding(
+            dataloader=dataloader_eval, model=model.teacher.backbone, device=device
+        )
+
+        # Eval on 1-NN
+        report_1NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=1)
+
+        # Eval on 20-NN
+        report_20NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=20)
+
+        # Eval on linear probing
+        report_linear = linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names)
+
+        # Append the results to the dataset
+        all_dict[str(iteration)] = {
+            "1-NN": report_1NN,
+            "20-NN": report_20NN,
+            "linear probing": report_linear,
+        }
+
+        # Save the results
+        eval_path = os.path.join(cfg.train.output_dir, "eval_metrics.json")
+        with open(eval_path, "w") as f:
+            json.dump(all_dict, f, indent=4)
+
+        # Save the teacher at eval iteration
+        new_state_dict = model.teacher.state_dict()
+
+        # Create folder for the current iteration
         iterstring = f"training_{iteration}"
         eval_dir = os.path.join(cfg.train.output_dir, "eval", iterstring)
         os.makedirs(eval_dir, exist_ok=True)
         # save teacher checkpoint
         teacher_ckp_path = os.path.join(eval_dir, "teacher_checkpoint.pth")
         torch.save({"teacher": new_state_dict}, teacher_ckp_path)
-
-    return all_dict
 
 
 def do_train(cfg, model, resume=False):
@@ -402,28 +400,20 @@ def do_train(cfg, model, resume=False):
 
     # Setup the eval data loader
     if cfg.evaluation.eval_period_iterations > 0:
-        data_loader_fit = make_data_loader(
-            dataset=dataset_fit,
+        data_loader_fit = torch.utils.data.DataLoader(
+            dataset_fit,
             batch_size=cfg.train.batch_size_per_gpu,
             num_workers=cfg.train.num_workers,
             shuffle=True,
-            seed=0,  # TODO: Fix this -- cfg.train.seed
-            sampler_type=None,
-            sampler_advance=0,  # TODO(qas): fix this -- start_iter * cfg.train.batch_size_per_gpu,
             drop_last=True,
-            collate_fn=None,
         )
 
-        data_loader_eval = make_data_loader(
-            dataset=dataset_eval,
+        data_loader_eval = torch.utils.data.DataLoader(
+            dataset_eval,
             batch_size=cfg.train.batch_size_per_gpu,
             num_workers=cfg.train.num_workers,
-            shuffle=True,
-            seed=0,  # TODO: Fix this -- cfg.train.seed
-            sampler_type=None,
-            sampler_advance=0,  # TODO(qas): fix this -- start_iter * cfg.train.batch_size_per_gpu,
+            shuffle=False,
             drop_last=True,
-            collate_fn=None,
         )
 
         # Dictionary of the eval metrics
@@ -512,7 +502,7 @@ def do_train(cfg, model, resume=False):
         if cfg.evaluation.eval_period_iterations > 0 and (
             (iteration + 1) % cfg.evaluation.eval_period_iterations == 0 or iteration == 0
         ):
-            all_eval_metrics = do_test(
+            do_test(
                 cfg,
                 model,
                 iteration,
