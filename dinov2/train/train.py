@@ -4,19 +4,21 @@
 # found in the LICENSE file in the root directory of this source tree.
 
 import argparse
+import json
 import logging
 import math
 import os
 from functools import partial
-import numpy as np
 from typing import Tuple
 
-import json
-from omegaconf import DictConfig
-from torch.nn import Module
-
+import numpy as np
 import torch
 from fvcore.common.checkpoint import PeriodicCheckpointer
+from omegaconf import DictConfig
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.neighbors import KNeighborsClassifier
+from torch.nn import Module
 
 import dinov2.distributed as distributed
 from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset, make_eval_dataset
@@ -26,11 +28,6 @@ from dinov2.logging import MetricLogger
 from dinov2.utils.config import setup
 from dinov2.utils.utils import CosineScheduler, write_list
 from dinov2.train.ssl_meta_arch import SSLMetaArch
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
-from sklearn.neighbors import KNeighborsClassifier
-
 
 torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
 logger = logging.getLogger("dinov2")
