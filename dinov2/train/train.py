@@ -4,23 +4,30 @@
 # found in the LICENSE file in the root directory of this source tree.
 
 import argparse
+import json
 import logging
 import math
 import os
 from functools import partial
+from typing import Tuple, NoReturn
 
+import numpy as np
 import torch
 from fvcore.common.checkpoint import PeriodicCheckpointer
+from omegaconf import DictConfig
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.neighbors import KNeighborsClassifier
+from torch.nn import Module
 
 import dinov2.distributed as distributed
-from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset
+from dinov2.data import SamplerType, make_data_loader, make_custom_dataset, make_labelled_dataset, make_eval_dataset
 from dinov2.data import collate_data_and_cast, DataAugmentationDINO, MaskingGenerator
 from dinov2.fsdp import FSDPCheckpointer
 from dinov2.logging import MetricLogger
 from dinov2.utils.config import setup
 from dinov2.utils.utils import CosineScheduler, write_list
 from dinov2.train.ssl_meta_arch import SSLMetaArch
-
 
 torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
 logger = logging.getLogger("dinov2")
@@ -118,11 +125,164 @@ def apply_optim_scheduler(optimizer, lr, wd, last_layer_lr):
         param_group["lr"] = (last_layer_lr if is_last_layer else lr) * lr_multiplier
 
 
-def do_test(cfg, model, iteration):
-    new_state_dict = model.teacher.state_dict()
+def calculate_embedding(
+    dataloader: torch.utils.data.DataLoader, model: Module, device: torch.device
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Computes feature embeddings for all images in a dataloader using the given model.
+    Args:
+        dataloader: torch.utils.data.DataLoader, A PyTorch dataloader yielding (image, label) batches.
+        model: Module, The model used to extract embeddings.
+        device: torch.device, The device on which to run the model ("cuda" or "cpu").
+    Returns:
+        embeddings: np.ndarray, The concatenated embeddings of all images, shape (N, D).
+        labels: np.ndarray, The concatenated labels for all images, shape (N,).
+    """
+    embeddings = []
+    label_list = []
 
+    model.eval()
+    model.to(device)
+
+    for images, labels in dataloader:
+
+        images = images.to(device)
+        # Passage dans le modèle
+        with torch.no_grad():
+            output = model(images)
+
+        embeddings.append(output.cpu())
+        label_list.append(labels.cpu())
+
+        del images, output
+        torch.cuda.empty_cache()
+
+    return torch.cat(embeddings, dim=0).numpy(), torch.cat(label_list, dim=0).numpy()
+
+
+def k_nearest_neighbor_eval(
+    train_array: np.ndarray,
+    train_labels: np.ndarray,
+    test_array: np.ndarray,
+    test_labels: np.ndarray,
+    target_names: list,
+    k: int,
+) -> dict[str, dict[str, dict]]:
+    """
+    Evaluates a k-Nearest Neighbors (k-NN) classifier on precomputed image embeddings.
+    Args:
+        train_array: np.ndarray, Embeddings for the training images.
+        train_labels: np.ndarray, Corresponding labels for the training images.
+        test_array: np.ndarray, Embeddings for the test images.
+        test_labels: np.ndarray, Corresponding labels for the test images.
+        target_names: list, List of class names for report formatting.
+        k: int, Number of neighbors to use for KNN.
+    Returns:
+        report: dict, A classification report with precision, recall, and F1-score for each class.
+    """
+    # Initialize the classifier
+    cls = KNeighborsClassifier(n_neighbors=k)
+
+    # Fit the model
+    cls.fit(train_array, train_labels)
+
+    # Make the predictions
+    preds = cls.predict(test_array)
+    report = classification_report(test_labels, preds, target_names=target_names, output_dict=True, zero_division=0)
+
+    return report
+
+
+def linear_probing_eval(
+    train_array: np.ndarray,
+    train_labels: np.ndarray,
+    test_array: np.ndarray,
+    test_labels: np.ndarray,
+    target_names: list,
+) -> dict[str, dict[str, dict]]:
+    """
+    Evaluates a logistic regression classifier (linear probing) on image embeddings.
+    Args:
+        train_array: np.ndarray, Embeddings for the training images.
+        train_labels: np.ndarray, Corresponding labels for the training images.
+        test_array: np.ndarray, Embeddings for the test images.
+        test_labels: np.ndarray, Corresponding labels for the test images.
+        target_names: list, List of class names for report formatting.
+    Returns:
+        report: dict, A classification report with precision, recall, and F1-score for each class.
+    """
+    # Initialize the classifier
+    cls = LogisticRegression()
+
+    # Fit the model
+    cls.fit(train_array, train_labels)
+
+    # Make the predictions
+    preds = cls.predict(test_array)
+    report = classification_report(test_labels, preds, target_names=target_names, output_dict=True, zero_division=0)
+
+    return report
+
+
+def do_test(
+    cfg: DictConfig,
+    model: Module,
+    iteration: int,
+    dataloader_fit: torch.utils.data.DataLoader,
+    dataloader_eval: torch.utils.data.DataLoader,
+    device: torch.device,
+    all_dict: dict[str, dict[str, dict]],
+    target_names: list,
+) -> NoReturn:
+    """
+    Performs model evaluation using 1-NN, 20-NN, and linear probing on the given dataloaders. Saves evaluation metrics and a checkpoint of the teacher model at the current training iteration.
+    Args:
+        cfg: DictConfig, Hydra config object containing training options and output paths.
+        model: Module, The model at the current iteration.
+        iteration: int, Training iteration number at which evaluation is performed.
+        dataloader_fit: torch.utils.data.DataLoader, Dataloader for the training split (for embedding extraction).
+        dataloader_eval: torch.utils.data.DataLoader, Dataloader for the evaluation split.
+        device: torch.device, Device used for inference.
+        all_dict: dict, Nested dictionary storing previous evaluation metrics, updated in-place.
+        target_names: list, Names of the target classes.
+    Returns:
+        all_dict: dict, The updated dictionary containing metrics for this iteration, structured for saving to JSON.
+    """
     if distributed.is_main_process():
-        iterstring = str(iteration)
+        # Compute the embeddings
+        train_array, train_labels = calculate_embedding(
+            dataloader=dataloader_fit, model=model.teacher.backbone, device=device
+        )
+        test_array, test_labels = calculate_embedding(
+            dataloader=dataloader_eval, model=model.teacher.backbone, device=device
+        )
+
+        # Eval on 1-NN
+        report_1NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=1)
+
+        # Eval on 20-NN
+        report_20NN = k_nearest_neighbor_eval(train_array, train_labels, test_array, test_labels, target_names, k=20)
+
+        # Eval on linear probing
+        report_linear = linear_probing_eval(train_array, train_labels, test_array, test_labels, target_names)
+
+        # Append the results to the dataset
+        all_dict[str(iteration)] = {
+            "1-NN": report_1NN,
+            "20-NN": report_20NN,
+            "linear probing": report_linear,
+        }
+
+        # Save the results
+        eval_path = os.path.join(cfg.train.output_dir, "eval_metrics.json")
+        with open(eval_path, "w") as f:
+            json.dump(all_dict, f, indent=4)
+
+        # Save the teacher at eval iteration
+        new_state_dict = model.teacher.state_dict()
+
+        # Create folder for the current iteration
+        iterstring = f"training_{iteration}"
         eval_dir = os.path.join(cfg.train.output_dir, "eval", iterstring)
         os.makedirs(eval_dir, exist_ok=True)
         # save teacher checkpoint
@@ -200,6 +360,11 @@ def do_train(cfg, model, resume=False):
         )
         print(f"{len(labelled_dataset)} elements were found for the labelled dataset")
 
+    if cfg.evaluation.eval_period_iterations > 0:
+        dataset_fit = make_eval_dataset(cfg.evaluation.fit_dataset_path, img_size)
+        dataset_eval = make_eval_dataset(cfg.evaluation.eval_dataset_path, img_size)
+        target_names = list(dataset_fit.translate_dict.keys())  # for the classification report
+
     # Save the preserved images, if necessary
     if dataset.preserved_images:
         write_list(
@@ -232,6 +397,27 @@ def do_train(cfg, model, resume=False):
             drop_last=True,
         )
         labelled_iterator = iter(labelled_dataloader)
+
+    # Setup the eval data loader
+    if cfg.evaluation.eval_period_iterations > 0:
+        data_loader_fit = torch.utils.data.DataLoader(
+            dataset_fit,
+            batch_size=cfg.train.batch_size_per_gpu,
+            num_workers=cfg.train.num_workers,
+            shuffle=True,
+            drop_last=True,
+        )
+
+        data_loader_eval = torch.utils.data.DataLoader(
+            dataset_eval,
+            batch_size=cfg.train.batch_size_per_gpu,
+            num_workers=cfg.train.num_workers,
+            shuffle=False,
+            drop_last=True,
+        )
+
+        # Dictionary of the eval metrics
+        all_eval_metrics = {}
 
     # A bit of verbose for information sake
     print("There are {} images in the unlabelled dataset used".format(len(dataset)))
@@ -313,8 +499,19 @@ def do_train(cfg, model, resume=False):
         metric_logger.update(memory=torch.cuda.max_memory_allocated() / 1024**2)
 
         # Checkpointing and testing
-        if cfg.evaluation.eval_period_iterations > 0 and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0:
-            do_test(cfg, model, f"training_{iteration}")
+        if cfg.evaluation.eval_period_iterations > 0 and (
+            (iteration + 1) % cfg.evaluation.eval_period_iterations == 0 or iteration == 0
+        ):
+            do_test(
+                cfg,
+                model,
+                iteration,
+                data_loader_fit,
+                data_loader_eval,
+                torch.device("cuda"),
+                all_eval_metrics,
+                target_names,
+            )
             torch.cuda.synchronize()
         periodic_checkpointer.step(iteration)
 
