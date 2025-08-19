@@ -57,7 +57,7 @@ class ImageDataset(Dataset):
                 except OSError:
                     print(f"the path indicated at {p} cannot be found.")
 
-            case list():
+            case list() | ListConfig():
                 for p in path:
                     images.extend(self._get_images(p))
 
