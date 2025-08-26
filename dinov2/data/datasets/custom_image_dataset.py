@@ -157,7 +157,7 @@ class LabelledDataset(Dataset):
         self.root = root
         self.transform = transform
         self.images_list, self.labels = self._get_images_and_labels(data_path)
-        self.translate_dict = self._make_translate_dict()
+        self.translate_dict = {}
 
     def _get_images_and_labels(self, data_path: str) -> tuple[list]:
         match data_path:
@@ -184,9 +184,6 @@ class LabelledDataset(Dataset):
                 raise SyntaxError("The data_path format isn't recognized.")
 
         return images_list, labels
-
-    def _make_translate_dict(self):
-        return {label: i for i, label in enumerate(set(self.labels))}
 
     def _get_image_data(self, path: str):
         with open(path, "rb") as f:
