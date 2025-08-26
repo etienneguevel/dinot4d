@@ -387,7 +387,7 @@ def do_train(cfg, model, resume=False):
         dataset_fit = make_eval_dataset(cfg.evaluation.fit_dataset_path, img_size)
         dataset_eval = make_eval_dataset(cfg.evaluation.eval_dataset_path, img_size)
 
-        all_labels = sorted(set(dataset_fit.labels) | set(dataset_eval.labels))
+        all_labels = sorted(set(dataset_fit.translate_dict.keys()) | set(dataset_eval.translate_dict.keys()))
         translate_dict = {label: i for i, label in enumerate(all_labels)}
         dataset_fit.translate_dict = translate_dict
         dataset_eval.translate_dict = translate_dict
