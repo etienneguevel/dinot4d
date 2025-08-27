@@ -8,6 +8,7 @@ import json
 import logging
 import math
 import os
+import time
 from functools import partial
 from typing import Tuple, NoReturn
 
@@ -249,6 +250,8 @@ def do_test(
         all_dict: dict, The updated dictionary containing metrics for this iteration, structured for saving to JSON.
     """
     if distributed.is_main_process():
+        print("Starting evaluation at iteration {}".format(iteration))
+        start_time = time.time()
         # Compute the embeddings
         train_array, train_labels = calculate_embedding(
             dataloader=dataloader_fit, model=model.teacher.backbone, device=device
@@ -272,6 +275,26 @@ def do_test(
             "20-NN": report_20NN,
             "linear probing": report_linear,
         }
+
+        # metric to log
+        end_time = time.time() - start_time
+
+        acc_1nn = report_1NN["accuracy"]
+        f1_macro_1nn = report_1NN["macro avg"]["f1-score"]
+
+        acc_20nn = report_20NN["accuracy"]
+        f1_macro_20nn = report_20NN["macro avg"]["f1-score"]
+
+        acc_linear = report_linear["accuracy"]
+        f1_macro_linear = report_linear["macro avg"]["f1-score"]
+
+        logger.info(
+            f"[Evaluation @ iter {iteration}] "
+            f"1-NN: acc={acc_1nn:.4f}, f1-macro={f1_macro_1nn:.4f} | "
+            f"20-NN: acc={acc_20nn:.4f}, f1-macro={f1_macro_20nn:.4f} | "
+            f"Linear: acc={acc_linear:.4f}, f1-macro={f1_macro_linear:.4f} | "
+            f"Time: {end_time:.6f}"
+        )
 
         # Save the results
         eval_path = os.path.join(cfg.train.output_dir, "eval_metrics.json")
@@ -363,6 +386,12 @@ def do_train(cfg, model, resume=False):
     if cfg.evaluation.eval_period_iterations > 0:
         dataset_fit = make_eval_dataset(cfg.evaluation.fit_dataset_path, img_size)
         dataset_eval = make_eval_dataset(cfg.evaluation.eval_dataset_path, img_size)
+
+        all_labels = sorted(set(dataset_fit.translate_dict.keys()) | set(dataset_eval.translate_dict.keys()))
+        translate_dict = {label: i for i, label in enumerate(all_labels)}
+        dataset_fit.translate_dict = translate_dict
+        dataset_eval.translate_dict = translate_dict
+
         target_names = list(dataset_fit.translate_dict.keys())  # for the classification report
 
     # Save the preserved images, if necessary
@@ -420,9 +449,9 @@ def do_train(cfg, model, resume=False):
         all_eval_metrics = {}
 
     # A bit of verbose for information sake
-    print("There are {} images in the unlabelled dataset used".format(len(dataset)))
+    logger.info("There are {} images in the unlabelled dataset used".format(len(dataset)))
     if do_daino:
-        print("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
+        logger.info("There are {} images in the labelled dataset used".format(len(labelled_dataset)))
 
     # Training loop
     iteration = start_iter

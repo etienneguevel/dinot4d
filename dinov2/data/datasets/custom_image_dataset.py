@@ -186,7 +186,7 @@ class LabelledDataset(Dataset):
         return images_list, labels
 
     def _make_translate_dict(self):
-        return {label: i for i, label in enumerate(set(self.labels))}
+        return {label: i for i, label in enumerate(sorted(set(self.labels)))}
 
     def _get_image_data(self, path: str):
         with open(path, "rb") as f:
@@ -202,10 +202,13 @@ class LabelledDataset(Dataset):
         try:
             path = self.images_list[index]
             image = self._get_image_data(path)
-            label = self.translate_dict[self.labels[index]]
-
         except Exception as e:
             raise RuntimeError(f"can not read image @ {path}") from e
+
+        try:
+            label = self.translate_dict[self.labels[index]]
+        except KeyError as e:
+            raise KeyError(f"Label '{self.labels[index]}' not found in translate_dict") from e
 
         if self.transform is not None:
             image = self.transform(image)
